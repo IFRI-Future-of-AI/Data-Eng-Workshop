@@ -102,8 +102,7 @@ FROM flights;
 ```sql
 SELECT
     passenger_name,
-    COALESCE(contact_data->>'phone', 'Non renseigné') AS phone
-FROM tickets;
-
-
+    COALESCE(contact_data->>'phone', 'N/A') AS phone
+FROM tickets
+WHERE contact_data->>'phone' LIKE '%+70%'
 ```
