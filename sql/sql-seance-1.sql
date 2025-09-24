@@ -5,8 +5,6 @@ SELECT
     arrival_airport AS arrival_airport ,
     COALESCE(actual_departure, '2025-01-01') AS actual_departure
 FROM flights
-
-
 /*
  Entre 0 et 1000 disons Bas
  Entre 1000 et 10000 Prix Moyen
