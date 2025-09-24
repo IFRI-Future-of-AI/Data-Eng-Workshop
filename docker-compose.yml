@@ -1,5 +1,4 @@
 services:
-  
   postgres-db : 
     image : postgres:15
     environment :
@@ -16,6 +15,7 @@ services:
       - ./data/demo-small-en.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
       - "5432:5432"
-
 volumes:
   postgres-db-volume:
+
+# docker compose up -d

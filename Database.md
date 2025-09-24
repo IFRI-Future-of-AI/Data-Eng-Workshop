@@ -1,5 +1,5 @@
 Voici un résumé du schéma de la base de données de démonstration « Airlines » :
-
+![Schéma de la base de données Airlines](./assets/schema.png)
 - **Table principale : `bookings`**
   - Représente une réservation (booking).
 
