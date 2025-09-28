@@ -23,9 +23,6 @@ notes: "Idempotent via MERGE; update seulement si content_hash change"
 ---
 */
 
--- Début transactionnelle (selon SGBD)
-BEGIN;
-
 WITH src AS (
   -- Source minimale + filtres (fenêtre incrémentale pour perf)
   SELECT
