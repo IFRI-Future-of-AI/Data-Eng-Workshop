@@ -156,7 +156,7 @@ Le dataset Airlines contient :
 **Abraham KOLOBOE** - *Data Engineer & Formateur*
 
 - GitHub: [@abrahamkoloboe27](https://github.com/abrahamkoloboe27)
-- LinkedIn: [Abraham KOLOBOE](https://linkedin.com/in/abraham-koloboe)
+- LinkedIn: [Abraham KOLOBOE](https://www.linkedin.com/in/abraham-zacharie-koloboe-data-science-ia-generative-llms-machine-learning/)
 - Organisation: [IFRI Future of AI](https://github.com/IFRI-Future-of-AI)
 
 ## 🤝 Contribution
