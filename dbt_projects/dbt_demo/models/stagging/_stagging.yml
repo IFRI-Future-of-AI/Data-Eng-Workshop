@@ -1,0 +1,13 @@
+
+version : 2
+
+models :
+    - name : stg_bookings
+      description : "Table des réservations"
+      columns :
+        - name : id
+          description : "Référence de la réservation"
+          tests :
+            - unique
+            - not_null
+

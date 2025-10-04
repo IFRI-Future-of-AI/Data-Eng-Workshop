@@ -1,0 +1,16 @@
+
+version : 2
+
+sources:
+  - name : demo
+    database: demo
+    schema: bookings
+    description: "Base de données des réservations de tickets de vols"
+
+    tables:
+      - name : bookings
+        description: "table des réservations"
+      - name : tickets
+        description: "Tickets"
+      - name : flights
+        description: "Vols"

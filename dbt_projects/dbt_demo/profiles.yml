@@ -1,0 +1,12 @@
+dbt_demo:
+  outputs:
+    dev:
+      dbname: demo
+      host: localhost
+      pass: postgres
+      port: 5432
+      schema: bookings
+      threads: 1
+      type: postgres
+      user: postgres
+  target: dev
