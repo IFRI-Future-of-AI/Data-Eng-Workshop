@@ -1,13 +1,233 @@
+version: 2
 
-version : 2
+models:
+  - name: stg_bookings
+    description: "Table staging des réservations - Données nettoyées et standardisées"
+    columns:
+      - name: id
+        description: "Référence unique de la réservation (book_ref)"
+        tests:
+          - unique
+          - not_null
+      - name: date
+        description: "Date de création de la réservation"
+        tests:
+          - not_null
+      - name: amount
+        description: "Montant total de la réservation"
+        tests:
+          - not_null
 
-models :
-    - name : stg_bookings
-      description : "Table des réservations"
-      columns :
-        - name : id
-          description : "Référence de la réservation"
-          tests :
-            - unique
-            - not_null
+  - name: stg_tickets
+    description: "Table staging des billets passagers - Un billet par passager"
+    columns:
+      - name: id
+        description: "Numéro unique du billet (ticket_no)"
+        tests:
+          - unique
+          - not_null
+      - name: id_book
+        description: "Référence de la réservation associée"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_bookings')
+              field: id
+      - name: passenger_id
+        description: "Identifiant unique du passager"
+        tests:
+          - not_null
+      - name: passenger_name
+        description: "Nom complet du passager"
+        tests:
+          - not_null
+      - name: contact_data
+        description: "Données de contact JSONB (email, phone)"
+
+  - name: stg_fligths
+    description: "Table staging des vols - Vols avec dates réelles uniquement"
+    columns:
+      - name: id
+        description: "Identifiant technique unique du vol"
+        tests:
+          - unique
+          - not_null
+      - name: no
+        description: "Numéro de vol commercial"
+        tests:
+          - not_null
+      - name: scheduled_departure
+        description: "Date et heure de départ prévue"
+        tests:
+          - not_null
+      - name: actual_departure
+        description: "Date et heure de départ réelle"
+        tests:
+          - not_null
+      - name: scheduled_arrival
+        description: "Date et heure d'arrivée prévue"
+        tests:
+          - not_null
+      - name: actual_arrival
+        description: "Date et heure d'arrivée réelle (filtre: NOT NULL)"
+        tests:
+          - not_null
+      - name: status
+        description: "Statut actuel du vol"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['On Time', 'Delayed', 'Departed', 'Arrived', 'Scheduled', 'Cancelled']
+      - name: aircraft_code
+        description: "Code de l'appareil utilisé"
+        tests:
+          - not_null
+      - name: departure_airport
+        description: "Code IATA aéroport de départ"
+        tests:
+          - not_null
+      - name: arrival_airport
+        description: "Code IATA aéroport d'arrivée"
+        tests:
+          - not_null
+
+  - name: stg_airports
+    description: "Table staging des aéroports - Référentiel avec géolocalisation"
+    columns:
+      - name: airport_code
+        description: "Code IATA de l'aéroport (3 caractères)"
+        tests:
+          - unique
+          - not_null
+      - name: airport_name
+        description: "Nom de l'aéroport (extrait en anglais)"
+        tests:
+          - not_null
+      - name: city_name
+        description: "Nom de la ville (extrait en anglais)"
+        tests:
+          - not_null
+      - name: longitude
+        description: "Longitude GPS de l'aéroport"
+      - name: latitude
+        description: "Latitude GPS de l'aéroport"
+      - name: timezone
+        description: "Fuseau horaire de l'aéroport"
+        tests:
+          - not_null
+      - name: dbt_loaded_at
+        description: "Timestamp de chargement par dbt"
+
+  - name: stg_aircrafts
+    description: "Table staging des appareils - Référentiel des modèles d'avions"
+    columns:
+      - name: aircraft_code
+        description: "Code unique de l'appareil"
+        tests:
+          - unique
+          - not_null
+      - name: aircraft_model
+        description: "Nom du modèle d'appareil (extrait en anglais)"
+        tests:
+          - not_null
+      - name: flight_range_km
+        description: "Autonomie de vol en kilomètres"
+        tests:
+          - not_null
+      - name: aircraft_category
+        description: "Catégorie de l'appareil (Court/Moyen/Long-courrier)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Court-courrier', 'Moyen-courrier', 'Long-courrier']
+      - name: dbt_loaded_at
+        description: "Timestamp de chargement par dbt"
+
+  - name: stg_seats
+    description: "Table staging des sièges - Configuration par appareil"
+    columns:
+      - name: aircraft_code
+        description: "Code de l'appareil"
+        tests:
+          - not_null
+      - name: seat_no
+        description: "Numéro du siège (ex: 1A, 12F)"
+        tests:
+          - not_null
+      - name: cabin_class
+        description: "Classe de cabine du siège"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Economy', 'Comfort', 'Business']
+      - name: seat_row
+        description: "Numéro de rangée du siège"
+        tests:
+          - not_null
+      - name: seat_letter
+        description: "Lettre du siège (A-F)"
+        tests:
+          - not_null
+      - name: seat_position
+        description: "Position du siège (Fenêtre, Couloir, Milieu)"
+        tests:
+          - accepted_values:
+              values: ['Fenêtre', 'Couloir', 'Milieu']
+      - name: dbt_loaded_at
+        description: "Timestamp de chargement par dbt"
+
+  - name: stg_boarding_passes
+    description: "Table staging des cartes d'embarquement - Check-in et assignation sièges"
+    columns:
+      - name: ticket_no
+        description: "Numéro du billet"
+        tests:
+          - not_null
+      - name: flight_id
+        description: "Identifiant du vol"
+        tests:
+          - not_null
+      - name: boarding_no
+        description: "Numéro séquentiel d'embarquement"
+        tests:
+          - not_null
+      - name: seat_no
+        description: "Siège assigné"
+        tests:
+          - not_null
+      - name: seat_row
+        description: "Rangée du siège assigné"
+      - name: seat_letter
+        description: "Lettre du siège assigné"
+      - name: dbt_loaded_at
+        description: "Timestamp de chargement par dbt"
+
+  - name: stg_ticket_flights
+    description: "Table staging des segments de vol - Association billets-vols avec tarification"
+    columns:
+      - name: ticket_no
+        description: "Numéro du billet"
+        tests:
+          - not_null
+      - name: flight_id
+        description: "Identifiant du vol"
+        tests:
+          - not_null
+      - name: cabin_class
+        description: "Classe tarifaire du segment"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Economy', 'Comfort', 'Business']
+      - name: segment_price
+        description: "Prix du segment de vol"
+        tests:
+          - not_null
+      - name: price_category
+        description: "Catégorie de prix (Économique, Standard, Premium, Luxe)"
+        tests:
+          - accepted_values:
+              values: ['Économique', 'Standard', 'Premium', 'Luxe']
+      - name: dbt_loaded_at
+        description: "Timestamp de chargement par dbt"
 

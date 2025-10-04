@@ -26,12 +26,45 @@ clean-targets:         # directories to be removed by `dbt clean`
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
-# In this example config, we tell dbt to build all models in the example/
-# directory as views. These settings can be overridden in the individual model
-# files using the `{{ config(...) }}` macro.
+# Configuration par couche (layer) du projet dbt
+# Architecture : Staging → Intermediate → Marts
 models:
   dbt_demo:
-    # Config indicated by + and applies to all files under models/example/
+    # Couche Staging : données brutes nettoyées (views)
     stagging:
       +materialized: view
+      +schema: staging
+      +tags: ['staging']
+    
+    # Couche Silvers : anciennes transformations (à migrer vers intermediate)
+    silvers:
+      +materialized: table
+      +schema: intermediate
+      +tags: ['intermediate', 'legacy']
+    
+    # Couche Intermediate : transformations et enrichissements (tables)
+    intermediate:
+      +materialized: table
+      +schema: intermediate
+      +tags: ['intermediate']
+    
+    # Couche Marts : modèles finaux pour l'analyse (tables)
+    marts:
+      +materialized: table
+      +schema: marts
+      +tags: ['marts']
+      
+      # Sous-domaines des marts
+      finance:
+        +tags: ['marts', 'finance']
+      operations:
+        +tags: ['marts', 'operations']
+      customers:
+        +tags: ['marts', 'customers']
+
+# Configuration des seeds
+seeds:
+  dbt_demo:
+    +schema: seeds
+    +tags: ['seeds', 'reference']
 

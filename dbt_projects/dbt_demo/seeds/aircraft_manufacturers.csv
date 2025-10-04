@@ -1,0 +1,10 @@
+aircraft_code,manufacturer,first_flight_year,production_status,typical_capacity
+773,Boeing,2003,En production,400
+763,Boeing,1981,Production terminée,290
+733,Boeing,1997,En production,189
+320,Airbus,1987,En production,180
+321,Airbus,1993,En production,220
+319,Airbus,1995,En production,160
+SU9,Sukhoi,2008,En production,100
+CN1,Bombardier,2013,En production,130
+CR2,Bombardier,2001,Production terminée,100

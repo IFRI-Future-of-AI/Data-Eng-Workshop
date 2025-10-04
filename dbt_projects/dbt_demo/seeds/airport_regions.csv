@@ -1,0 +1,11 @@
+airport_code,region,country,continent,hub_type
+LED,Nord-Ouest,Russie,Europe,Hub Principal
+DME,Centre,Russie,Europe,Hub Principal
+SVO,Centre,Russie,Europe,Hub Principal
+VKO,Centre,Russie,Europe,Hub Secondaire
+KZN,Volga,Russie,Europe,Régional
+SVX,Oural,Russie,Asie,Régional
+OVB,Sibérie,Russie,Asie,Hub Régional
+IKT,Sibérie,Russie,Asie,Régional
+KJA,Sibérie,Russie,Asie,Régional
+VVO,Extrême-Orient,Russie,Asie,Hub Régional

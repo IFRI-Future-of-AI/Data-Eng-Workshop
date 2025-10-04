@@ -1,16 +1,219 @@
 
-version : 2
+version: 2
 
 sources:
-  - name : demo
+  - name: demo
     database: demo
     schema: bookings
-    description: "Base de données des réservations de tickets de vols"
+    description: "Base de données de démonstration Airlines - Système de gestion de compagnie aérienne"
 
     tables:
-      - name : bookings
-        description: "table des réservations"
-      - name : tickets
-        description: "Tickets"
-      - name : flights
-        description: "Vols"
+      - name: bookings
+        description: "Table principale des réservations de vols"
+        columns:
+          - name: book_ref
+            description: "Référence unique de la réservation (format: 6 caractères alphanumériques)"
+            tests:
+              - unique
+              - not_null
+          - name: book_date
+            description: "Date et heure de création de la réservation"
+            tests:
+              - not_null
+          - name: total_amount
+            description: "Montant total de la réservation en devise locale"
+            tests:
+              - not_null
+
+      - name: tickets
+        description: "Billets de passagers - Un billet par passager par réservation"
+        columns:
+          - name: ticket_no
+            description: "Numéro unique du billet (13 chiffres)"
+            tests:
+              - unique
+              - not_null
+          - name: book_ref
+            description: "Référence de la réservation associée"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('demo', 'bookings')
+                  field: book_ref
+          - name: passenger_id
+            description: "Identifiant unique du passager"
+            tests:
+              - not_null
+          - name: passenger_name
+            description: "Nom complet du passager"
+            tests:
+              - not_null
+          - name: contact_data
+            description: "Informations de contact au format JSONB (email, phone)"
+
+      - name: flights
+        description: "Vols programmés avec informations de départ/arrivée et statut"
+        columns:
+          - name: flight_id
+            description: "Identifiant technique unique du vol"
+            tests:
+              - unique
+              - not_null
+          - name: flight_no
+            description: "Numéro de vol (ex: PG0405)"
+            tests:
+              - not_null
+          - name: scheduled_departure
+            description: "Date et heure de départ prévue"
+            tests:
+              - not_null
+          - name: scheduled_arrival
+            description: "Date et heure d'arrivée prévue"
+            tests:
+              - not_null
+          - name: actual_departure
+            description: "Date et heure de départ réelle"
+          - name: actual_arrival
+            description: "Date et heure d'arrivée réelle"
+          - name: status
+            description: "Statut du vol (On Time, Delayed, Departed, Arrived, Scheduled, Cancelled)"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['On Time', 'Delayed', 'Departed', 'Arrived', 'Scheduled', 'Cancelled']
+          - name: aircraft_code
+            description: "Code de l'appareil utilisé"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('demo', 'aircrafts_data')
+                  field: aircraft_code
+          - name: departure_airport
+            description: "Code IATA de l'aéroport de départ"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('demo', 'airports_data')
+                  field: airport_code
+          - name: arrival_airport
+            description: "Code IATA de l'aéroport d'arrivée"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('demo', 'airports_data')
+                  field: airport_code
+
+      - name: ticket_flights
+        description: "Segments de vol par billet - Association entre billets et vols"
+        columns:
+          - name: ticket_no
+            description: "Numéro du billet"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('demo', 'tickets')
+                  field: ticket_no
+          - name: flight_id
+            description: "Identifiant du vol"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('demo', 'flights')
+                  field: flight_id
+          - name: fare_conditions
+            description: "Classe tarifaire (Economy, Comfort, Business)"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['Economy', 'Comfort', 'Business']
+          - name: amount
+            description: "Prix du segment de vol"
+            tests:
+              - not_null
+
+      - name: boarding_passes
+        description: "Cartes d'embarquement émises lors du check-in"
+        columns:
+          - name: ticket_no
+            description: "Numéro du billet"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('demo', 'tickets')
+                  field: ticket_no
+          - name: flight_id
+            description: "Identifiant du vol"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('demo', 'flights')
+                  field: flight_id
+          - name: boarding_no
+            description: "Numéro séquentiel d'embarquement"
+            tests:
+              - not_null
+          - name: seat_no
+            description: "Numéro de siège assigné"
+            tests:
+              - not_null
+
+      - name: airports_data
+        description: "Référentiel des aéroports avec géolocalisation"
+        columns:
+          - name: airport_code
+            description: "Code IATA de l'aéroport (3 caractères)"
+            tests:
+              - unique
+              - not_null
+          - name: airport_name
+            description: "Nom complet de l'aéroport (multilingue JSONB)"
+            tests:
+              - not_null
+          - name: city
+            description: "Ville de l'aéroport (multilingue JSONB)"
+            tests:
+              - not_null
+          - name: coordinates
+            description: "Coordonnées GPS (latitude, longitude) au format POINT"
+          - name: timezone
+            description: "Fuseau horaire de l'aéroport"
+            tests:
+              - not_null
+
+      - name: aircrafts_data
+        description: "Référentiel des modèles d'appareils avec configuration"
+        columns:
+          - name: aircraft_code
+            description: "Code unique de l'appareil (3 caractères)"
+            tests:
+              - unique
+              - not_null
+          - name: model
+            description: "Nom du modèle d'appareil (multilingue JSONB)"
+            tests:
+              - not_null
+          - name: range
+            description: "Autonomie de vol en kilomètres"
+            tests:
+              - not_null
+
+      - name: seats
+        description: "Configuration des sièges par appareil et classe"
+        columns:
+          - name: aircraft_code
+            description: "Code de l'appareil"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('demo', 'aircrafts_data')
+                  field: aircraft_code
+          - name: seat_no
+            description: "Numéro du siège dans l'appareil"
+            tests:
+              - not_null
+          - name: fare_conditions
+            description: "Classe du siège (Economy, Comfort, Business)"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['Economy', 'Comfort', 'Business']

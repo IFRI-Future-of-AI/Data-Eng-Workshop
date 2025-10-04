@@ -1,0 +1,4 @@
+fare_class,class_name,amenities,baggage_allowance,priority_boarding
+Economy,Classe Économique,Siège standard | Repas basique,1 bagage en soute (23kg),Non
+Comfort,Classe Confort,Siège avec plus d'espace | Repas amélioré | Couverture,2 bagages en soute (23kg chacun),Oui
+Business,Classe Affaires,Siège inclinable | Repas premium | Kit confort | Accès salon,3 bagages en soute (32kg chacun),Oui

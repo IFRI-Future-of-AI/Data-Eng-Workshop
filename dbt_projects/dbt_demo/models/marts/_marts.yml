@@ -1,0 +1,168 @@
+version: 2
+
+models:
+  # ============================================
+  # MARTS - FINANCE
+  # ============================================
+  
+  - name: fct_bookings
+    description: |
+      Table de faits des réservations pour l'analyse financière.
+      Contient les métriques clés de revenus, nombre de passagers et segments de vol.
+      Source principale pour les rapports de revenus et KPI financiers.
+    config:
+      tags: ['marts', 'finance', 'fact']
+    columns:
+      - name: booking_ref
+        description: "Référence unique de la réservation"
+        tests:
+          - unique
+          - not_null
+      - name: booking_date
+        description: "Date et heure de création de la réservation"
+        tests:
+          - not_null
+      - name: total_booking_amount
+        description: "Montant total de la réservation"
+        tests:
+          - not_null
+      - name: total_passengers
+        description: "Nombre de passagers dans la réservation"
+      - name: revenue_per_passenger
+        description: "Revenu moyen par passager"
+      - name: customer_value_segment
+        description: "Segment de valeur client (Économique, Standard, Premium, VIP)"
+        tests:
+          - accepted_values:
+              values: ['Économique', 'Standard', 'Premium', 'VIP']
+
+  # ============================================
+  # MARTS - OPERATIONS
+  # ============================================
+  
+  - name: fct_flights
+    description: |
+      Table de faits des vols pour l'analyse opérationnelle.
+      Contient les métriques de performance, retards et durées de vol.
+      Source principale pour les rapports de ponctualité et efficacité opérationnelle.
+    config:
+      tags: ['marts', 'operations', 'fact']
+    columns:
+      - name: flight_id
+        description: "Identifiant unique du vol"
+        tests:
+          - unique
+          - not_null
+      - name: flight_no
+        description: "Numéro de vol commercial"
+        tests:
+          - not_null
+      - name: flight_status
+        description: "Statut actuel du vol"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['On Time', 'Delayed', 'Departed', 'Arrived', 'Scheduled', 'Cancelled']
+      - name: actual_flight_duration_hours
+        description: "Durée réelle du vol en heures"
+      - name: departure_delay_minutes
+        description: "Retard au départ en minutes (négatif = avance)"
+      - name: arrival_delay_minutes
+        description: "Retard à l'arrivée en minutes (négatif = avance)"
+      - name: delay_category
+        description: "Catégorie de retard"
+      - name: route_distance_km
+        description: "Distance de la route en kilomètres"
+
+  - name: dim_airports
+    description: |
+      Table de dimension des aéroports.
+      Référentiel géographique pour l'analyse spatiale des opérations.
+    config:
+      tags: ['marts', 'operations', 'dimension']
+    columns:
+      - name: airport_code
+        description: "Code IATA unique de l'aéroport"
+        tests:
+          - unique
+          - not_null
+      - name: airport_name
+        description: "Nom complet de l'aéroport"
+        tests:
+          - not_null
+      - name: city_name
+        description: "Ville de l'aéroport"
+        tests:
+          - not_null
+      - name: latitude
+        description: "Latitude GPS"
+      - name: longitude
+        description: "Longitude GPS"
+      - name: timezone
+        description: "Fuseau horaire"
+
+  - name: dim_aircrafts
+    description: |
+      Table de dimension des appareils.
+      Référentiel des modèles d'avions pour l'analyse de flotte.
+    config:
+      tags: ['marts', 'operations', 'dimension']
+    columns:
+      - name: aircraft_code
+        description: "Code unique de l'appareil"
+        tests:
+          - unique
+          - not_null
+      - name: aircraft_model
+        description: "Modèle de l'appareil"
+        tests:
+          - not_null
+      - name: flight_range_km
+        description: "Autonomie de vol en km"
+        tests:
+          - not_null
+      - name: aircraft_category
+        description: "Catégorie (Court/Moyen/Long-courrier)"
+        tests:
+          - accepted_values:
+              values: ['Court-courrier', 'Moyen-courrier', 'Long-courrier']
+
+  # ============================================
+  # MARTS - CUSTOMERS
+  # ============================================
+  
+  - name: dim_passengers
+    description: |
+      Table de dimension des passagers avec métriques agrégées.
+      Vue unique de chaque passager avec historique de voyage et préférences.
+      Source principale pour l'analyse de fidélisation et segmentation client.
+    config:
+      tags: ['marts', 'customers', 'dimension']
+    columns:
+      - name: passenger_id
+        description: "Identifiant unique du passager"
+        tests:
+          - unique
+          - not_null
+      - name: passenger_name
+        description: "Nom complet du passager"
+        tests:
+          - not_null
+      - name: total_tickets
+        description: "Nombre total de billets achetés"
+      - name: total_bookings
+        description: "Nombre de réservations effectuées"
+      - name: total_flights_taken
+        description: "Nombre de vols effectués"
+      - name: lifetime_value
+        description: "Valeur totale dépensée par le passager"
+      - name: avg_segment_spend
+        description: "Dépense moyenne par segment de vol"
+      - name: total_km_traveled
+        description: "Distance totale parcourue en km"
+      - name: preferred_cabin_class
+        description: "Classe de cabine préférée (la plus fréquente)"
+      - name: first_flight_date
+        description: "Date du premier vol"
+      - name: last_flight_date
+        description: "Date du dernier vol"
