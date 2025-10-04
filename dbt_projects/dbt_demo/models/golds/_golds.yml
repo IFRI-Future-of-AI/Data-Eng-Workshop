@@ -1,0 +1,189 @@
+version: 2
+
+models:
+  - name: fct_bookings
+    description: "Table de faits - Réservations pour analyse avec toutes les métriques clés"
+    columns:
+      - name: booking_key
+        description: "Clé de substitution pour la réservation"
+        tests:
+          - unique
+          - not_null
+      - name: booking_ref
+        description: "Référence naturelle de la réservation"
+        tests:
+          - unique
+          - not_null
+      - name: booking_amount_currency
+        description: "Montant de la réservation"
+        tests:
+          - not_null
+      - name: ticket_count
+        description: "Nombre de billets"
+      - name: passenger_count
+        description: "Nombre de passagers"
+      - name: booking_type
+        description: "Type de réservation (Solo, Couple, Group)"
+
+  - name: fct_flights
+    description: "Table de faits - Vols pour analyse de performance"
+    columns:
+      - name: flight_key
+        description: "Clé de substitution pour le vol"
+        tests:
+          - unique
+          - not_null
+      - name: flight_id
+        description: "Identifiant naturel du vol"
+        tests:
+          - unique
+          - not_null
+      - name: flight_no
+        description: "Numéro de vol"
+      - name: departure_airport_key
+        description: "Clé de l'aéroport de départ"
+      - name: arrival_airport_key
+        description: "Clé de l'aéroport d'arrivée"
+      - name: aircraft_key
+        description: "Clé de l'appareil"
+      - name: scheduled_duration_minutes
+        description: "Durée prévue en minutes"
+      - name: actual_duration_minutes
+        description: "Durée réelle en minutes"
+      - name: departure_delay_minutes
+        description: "Retard au départ en minutes"
+      - name: arrival_delay_minutes
+        description: "Retard à l'arrivée en minutes"
+      - name: departure_performance
+        description: "Performance au départ (On Time, Minor Delay, etc.)"
+        tests:
+          - accepted_values:
+              values: ['Early', 'On Time', 'Minor Delay', 'Moderate Delay', 'Severe Delay']
+      - name: arrival_performance
+        description: "Performance à l'arrivée"
+        tests:
+          - accepted_values:
+              values: ['Early', 'On Time', 'Minor Delay', 'Moderate Delay', 'Severe Delay']
+
+  - name: dim_airports
+    description: "Table de dimension - Aéroports avec métriques de trafic"
+    columns:
+      - name: airport_key
+        description: "Clé de substitution pour l'aéroport"
+        tests:
+          - unique
+          - not_null
+      - name: airport_code
+        description: "Code IATA de l'aéroport"
+        tests:
+          - unique
+          - not_null
+      - name: airport_name_en
+        description: "Nom de l'aéroport en anglais"
+      - name: city_en
+        description: "Ville en anglais"
+      - name: timezone
+        description: "Fuseau horaire"
+      - name: total_traffic
+        description: "Trafic total (départs + arrivées)"
+      - name: airport_category
+        description: "Catégorie d'aéroport"
+        tests:
+          - accepted_values:
+              values: ['Major Hub', 'Regional Hub', 'Secondary Airport', 'Small Airport']
+      - name: performance_rating
+        description: "Note de performance"
+
+  - name: dim_aircrafts
+    description: "Table de dimension - Appareils avec configuration et performance"
+    columns:
+      - name: aircraft_key
+        description: "Clé de substitution pour l'appareil"
+        tests:
+          - unique
+          - not_null
+      - name: aircraft_code
+        description: "Code de l'appareil"
+        tests:
+          - unique
+          - not_null
+      - name: model_en
+        description: "Modèle en anglais"
+      - name: range_km
+        description: "Autonomie en km"
+      - name: range_category
+        description: "Catégorie d'autonomie"
+        tests:
+          - accepted_values:
+              values: ['Short-haul', 'Medium-haul', 'Long-haul']
+      - name: total_seats
+        description: "Nombre total de sièges"
+      - name: avg_occupancy_rate
+        description: "Taux d'occupation moyen"
+      - name: performance_category
+        description: "Catégorie de performance"
+
+  - name: dim_passengers
+    description: "Table de dimension - Passagers avec historique et segmentation"
+    columns:
+      - name: passenger_key
+        description: "Clé de substitution pour le passager"
+        tests:
+          - unique
+          - not_null
+      - name: passenger_id
+        description: "Identifiant naturel du passager"
+        tests:
+          - unique
+          - not_null
+      - name: passenger_name
+        description: "Nom du passager"
+      - name: phone
+        description: "Téléphone"
+      - name: email
+        description: "Email"
+      - name: total_bookings
+        description: "Nombre total de réservations"
+      - name: total_flights
+        description: "Nombre total de vols"
+      - name: total_spent
+        description: "Montant total dépensé"
+      - name: passenger_tier
+        description: "Niveau de fidélité (Frequent Flyer, Regular, Occasional, One-time)"
+        tests:
+          - accepted_values:
+              values: ['Frequent Flyer', 'Regular', 'Occasional', 'One-time']
+
+  - name: dim_dates
+    description: "Table de dimension - Calendrier pour analyses temporelles"
+    columns:
+      - name: date_key
+        description: "Clé de substitution pour la date"
+        tests:
+          - unique
+          - not_null
+      - name: calendar_date
+        description: "Date calendaire"
+        tests:
+          - unique
+          - not_null
+      - name: year
+        description: "Année"
+      - name: month
+        description: "Mois"
+      - name: day
+        description: "Jour"
+      - name: quarter
+        description: "Trimestre"
+      - name: week_of_year
+        description: "Semaine de l'année"
+      - name: day_of_week
+        description: "Jour de la semaine (0=dimanche)"
+      - name: month_name
+        description: "Nom du mois"
+      - name: day_name
+        description: "Nom du jour"
+      - name: is_weekend
+        description: "Est un week-end"
+      - name: is_weekday
+        description: "Est un jour de semaine"

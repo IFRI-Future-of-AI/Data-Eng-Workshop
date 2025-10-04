@@ -1,0 +1,7 @@
+status_en,status_fr,status_category,is_final
+Scheduled,Programmé,pending,false
+On Time,À l'heure,active,false
+Delayed,Retardé,active,false
+Departed,Décollé,in_progress,false
+Arrived,Arrivé,completed,true
+Cancelled,Annulé,cancelled,true

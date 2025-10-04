@@ -1,0 +1,4 @@
+fare_condition,fare_condition_fr,tier,comfort_level,baggage_allowance_kg
+Economy,Économique,1,Standard,20
+Comfort,Confort,2,Enhanced,25
+Business,Affaires,3,Premium,30

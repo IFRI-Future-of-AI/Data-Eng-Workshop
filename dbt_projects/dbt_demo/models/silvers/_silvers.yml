@@ -1,0 +1,221 @@
+version: 2
+
+models:
+  - name: tickets_with_bookings
+    description: "Modèle intermédiaire - Billets enrichis avec les informations de réservation"
+    columns:
+      - name: id
+        description: "Numéro unique du billet"
+        tests:
+          - unique
+          - not_null
+      - name: id_book
+        description: "Référence de la réservation"
+      - name: passenger_id
+        description: "Identifiant du passager"
+      - name: passenger_name
+        description: "Nom du passager"
+      - name: contact_data
+        description: "Données de contact JSON"
+      - name: date
+        description: "Date de la réservation"
+      - name: amount
+        description: "Montant de la réservation"
+
+  - name: flights_enriched
+    description: "Modèle intermédiaire - Vols enrichis avec aéroports, avions et métriques calculées"
+    columns:
+      - name: flight_id
+        description: "Identifiant unique du vol"
+        tests:
+          - unique
+          - not_null
+      - name: flight_no
+        description: "Numéro de vol"
+      - name: scheduled_departure
+        description: "Heure de départ prévue"
+      - name: actual_departure
+        description: "Heure de départ réelle"
+      - name: scheduled_arrival
+        description: "Heure d'arrivée prévue"
+      - name: actual_arrival
+        description: "Heure d'arrivée réelle"
+      - name: status
+        description: "Statut du vol en anglais"
+      - name: status_fr
+        description: "Statut du vol en français"
+      - name: scheduled_duration_minutes
+        description: "Durée prévue du vol en minutes"
+      - name: actual_duration_minutes
+        description: "Durée réelle du vol en minutes"
+      - name: departure_delay_minutes
+        description: "Retard au départ en minutes (positif = retard, négatif = avance)"
+      - name: arrival_delay_minutes
+        description: "Retard à l'arrivée en minutes (positif = retard, négatif = avance)"
+      - name: departure_airport_code
+        description: "Code de l'aéroport de départ"
+      - name: departure_airport_name
+        description: "Nom de l'aéroport de départ"
+      - name: departure_city
+        description: "Ville de départ"
+      - name: departure_timezone
+        description: "Fuseau horaire de départ"
+      - name: arrival_airport_code
+        description: "Code de l'aéroport d'arrivée"
+      - name: arrival_airport_name
+        description: "Nom de l'aéroport d'arrivée"
+      - name: arrival_city
+        description: "Ville d'arrivée"
+      - name: arrival_timezone
+        description: "Fuseau horaire d'arrivée"
+      - name: aircraft_code
+        description: "Code de l'appareil"
+      - name: aircraft_model
+        description: "Modèle de l'appareil"
+      - name: aircraft_range_km
+        description: "Autonomie de l'appareil en km"
+      - name: aircraft_range_category
+        description: "Catégorie d'autonomie (Short/Medium/Long-haul)"
+
+  - name: bookings_metrics
+    description: "Modèle intermédiaire - Réservations avec métriques agrégées (nombre de tickets, passagers, segments)"
+    columns:
+      - name: booking_ref
+        description: "Référence unique de la réservation"
+        tests:
+          - unique
+          - not_null
+      - name: booking_date
+        description: "Date et heure de la réservation"
+      - name: booking_date_only
+        description: "Date seule de la réservation"
+      - name: booking_year
+        description: "Année de la réservation"
+      - name: booking_month
+        description: "Mois de la réservation"
+      - name: booking_day
+        description: "Jour de la réservation"
+      - name: booking_day_of_week
+        description: "Jour de la semaine (0=dimanche, 6=samedi)"
+      - name: booking_amount_cents
+        description: "Montant en centimes"
+      - name: booking_amount_currency
+        description: "Montant en devise"
+      - name: ticket_count
+        description: "Nombre de billets dans la réservation"
+      - name: passenger_count
+        description: "Nombre de passagers"
+      - name: flight_segment_count
+        description: "Nombre de segments de vol"
+      - name: amount_per_passenger
+        description: "Montant moyen par passager"
+      - name: min_fare_condition
+        description: "Classe minimale réservée"
+      - name: max_fare_condition
+        description: "Classe maximale réservée"
+      - name: booking_type
+        description: "Type de réservation (Solo, Couple, Small Group, Large Group)"
+      - name: trip_complexity
+        description: "Complexité du voyage (Direct, One Stop, Multiple Stops)"
+
+  - name: passenger_journey
+    description: "Modèle intermédiaire - Parcours complet des passagers de la réservation à l'embarquement"
+    columns:
+      - name: passenger_id
+        description: "Identifiant unique du passager"
+      - name: passenger_name
+        description: "Nom du passager"
+      - name: passenger_phone
+        description: "Téléphone du passager"
+      - name: passenger_email
+        description: "Email du passager"
+      - name: booking_ref
+        description: "Référence de réservation"
+      - name: booking_date
+        description: "Date de réservation"
+      - name: booking_amount
+        description: "Montant de la réservation"
+      - name: ticket_no
+        description: "Numéro de billet"
+      - name: flight_id
+        description: "Identifiant du vol"
+      - name: flight_no
+        description: "Numéro de vol"
+      - name: fare_conditions
+        description: "Classe tarifaire"
+      - name: segment_amount
+        description: "Montant du segment"
+      - name: journey_status
+        description: "Statut du parcours (Boarded, Flight Completed, Flight Active, etc.)"
+
+  - name: aircraft_utilization
+    description: "Modèle intermédiaire - Métriques d'utilisation et performance des appareils"
+    columns:
+      - name: aircraft_code
+        description: "Code de l'appareil"
+        tests:
+          - unique
+          - not_null
+      - name: aircraft_model
+        description: "Modèle de l'appareil"
+      - name: aircraft_range_km
+        description: "Autonomie en km"
+      - name: aircraft_range_category
+        description: "Catégorie d'autonomie"
+      - name: total_seats
+        description: "Nombre total de sièges"
+      - name: business_seats
+        description: "Nombre de sièges Business"
+      - name: comfort_seats
+        description: "Nombre de sièges Comfort"
+      - name: economy_seats
+        description: "Nombre de sièges Economy"
+      - name: total_flights
+        description: "Nombre total de vols"
+      - name: completed_flights
+        description: "Nombre de vols complétés"
+      - name: cancelled_flights
+        description: "Nombre de vols annulés"
+      - name: avg_flight_duration_minutes
+        description: "Durée moyenne des vols en minutes"
+      - name: avg_departure_delay_minutes
+        description: "Retard moyen au départ"
+      - name: avg_arrival_delay_minutes
+        description: "Retard moyen à l'arrivée"
+      - name: avg_occupancy_rate
+        description: "Taux d'occupation moyen (%)"
+      - name: performance_category
+        description: "Catégorie de performance (Excellent, Good, Average, Below Average, Poor)"
+
+  - name: airport_traffic
+    description: "Modèle intermédiaire - Métriques de trafic et performance des aéroports"
+    columns:
+      - name: airport_code
+        description: "Code IATA de l'aéroport"
+        tests:
+          - unique
+          - not_null
+      - name: airport_name_en
+        description: "Nom de l'aéroport"
+      - name: city_en
+        description: "Ville"
+      - name: timezone
+        description: "Fuseau horaire"
+      - name: total_departures
+        description: "Nombre total de départs"
+      - name: avg_departure_delay_minutes
+        description: "Retard moyen des départs"
+      - name: cancelled_departures
+        description: "Nombre de départs annulés"
+      - name: total_arrivals
+        description: "Nombre total d'arrivées"
+      - name: avg_arrival_delay_minutes
+        description: "Retard moyen des arrivées"
+      - name: completed_arrivals
+        description: "Nombre d'arrivées complétées"
+      - name: total_traffic
+        description: "Trafic total (départs + arrivées)"
+      - name: airport_category
+        description: "Catégorie d'aéroport (Major Hub, Regional Hub, Secondary Airport, Small Airport)"
+      - name: performance_rating
+        description: "Note de performance (Excellent, Average, Below Average, Poor Performance)"

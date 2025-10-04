@@ -1,0 +1,6 @@
+airport_code,region,country,is_international,hub_type
+DME,Europe,Russia,true,Major Hub
+SVO,Europe,Russia,true,Major Hub
+LED,Europe,Russia,true,Major Hub
+VKO,Europe,Russia,true,Secondary Hub
+KZN,Europe,Russia,false,Regional

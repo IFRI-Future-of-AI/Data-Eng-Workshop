@@ -1,13 +1,226 @@
+version: 2
 
-version : 2
+models:
+  - name: stg_bookings
+    description: "Table staging des réservations - Normalisation des données de réservation"
+    columns:
+      - name: id
+        description: "Référence unique de la réservation (book_ref)"
+        tests:
+          - unique
+          - not_null
+      - name: date
+        description: "Date de création de la réservation"
+        tests:
+          - not_null
+      - name: amount
+        description: "Montant total de la réservation"
+        tests:
+          - not_null
 
-models :
-    - name : stg_bookings
-      description : "Table des réservations"
-      columns :
-        - name : id
-          description : "Référence de la réservation"
-          tests :
-            - unique
-            - not_null
+  - name: stg_tickets
+    description: "Table staging des billets - Un billet par passager"
+    columns:
+      - name: id
+        description: "Numéro unique du billet (ticket_no)"
+        tests:
+          - unique
+          - not_null
+      - name: id_book
+        description: "Référence de la réservation associée"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_bookings')
+              field: id
+      - name: passenger_id
+        description: "Identifiant unique du passager"
+        tests:
+          - not_null
+      - name: passenger_name
+        description: "Nom complet du passager"
+        tests:
+          - not_null
+      - name: contact_data
+        description: "Données de contact au format JSON"
 
+  - name: stg_fligths
+    description: "Table staging des vols - Vols ayant atterri (actual_arrival NOT NULL)"
+    columns:
+      - name: id
+        description: "Identifiant unique du vol"
+        tests:
+          - unique
+          - not_null
+      - name: no
+        description: "Numéro de vol"
+        tests:
+          - not_null
+      - name: scheduled_departure
+        description: "Heure de départ prévue"
+        tests:
+          - not_null
+      - name: actual_departure
+        description: "Heure de départ réelle"
+      - name: scheduled_arrival
+        description: "Heure d'arrivée prévue"
+        tests:
+          - not_null
+      - name: actual_arrival
+        description: "Heure d'arrivée réelle"
+        tests:
+          - not_null
+      - name: status
+        description: "Statut du vol"
+        tests:
+          - not_null
+      - name: aircraft_code
+        description: "Code de l'appareil utilisé"
+        tests:
+          - not_null
+      - name: departure_airport
+        description: "Code de l'aéroport de départ"
+        tests:
+          - not_null
+      - name: arrival_airport
+        description: "Code de l'aéroport d'arrivée"
+        tests:
+          - not_null
+
+  - name: stg_airports
+    description: "Table staging des aéroports - Données géographiques et informations"
+    columns:
+      - name: airport_code
+        description: "Code IATA de l'aéroport (3 lettres)"
+        tests:
+          - unique
+          - not_null
+      - name: airport_name_en
+        description: "Nom de l'aéroport en anglais"
+        tests:
+          - not_null
+      - name: airport_name_ru
+        description: "Nom de l'aéroport en russe"
+      - name: city_en
+        description: "Ville en anglais"
+        tests:
+          - not_null
+      - name: city_ru
+        description: "Ville en russe"
+      - name: coordinates
+        description: "Coordonnées géographiques (point PostgreSQL)"
+      - name: coordinates_text
+        description: "Coordonnées au format texte"
+      - name: timezone
+        description: "Fuseau horaire"
+        tests:
+          - not_null
+
+  - name: stg_aircrafts
+    description: "Table staging des appareils - Modèles et spécifications"
+    columns:
+      - name: aircraft_code
+        description: "Code unique de l'appareil"
+        tests:
+          - unique
+          - not_null
+      - name: model_en
+        description: "Modèle de l'appareil en anglais"
+        tests:
+          - not_null
+      - name: model_ru
+        description: "Modèle de l'appareil en russe"
+      - name: range_km
+        description: "Autonomie en kilomètres"
+        tests:
+          - not_null
+      - name: range_category
+        description: "Catégorie d'autonomie (Short-haul, Medium-haul, Long-haul)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Short-haul', 'Medium-haul', 'Long-haul']
+
+  - name: stg_seats
+    description: "Table staging des sièges - Configuration de cabine par appareil"
+    columns:
+      - name: aircraft_code
+        description: "Code de l'appareil"
+        tests:
+          - not_null
+      - name: seat_no
+        description: "Numéro du siège (ex: 1A, 12F)"
+        tests:
+          - not_null
+      - name: fare_conditions
+        description: "Classe de service"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Economy', 'Comfort', 'Business']
+      - name: seat_row
+        description: "Numéro de rangée extrait"
+      - name: seat_position
+        description: "Lettre de position extraite"
+      - name: seat_location_type
+        description: "Type de siège (Window, Middle, Aisle)"
+        tests:
+          - accepted_values:
+              values: ['Window', 'Middle', 'Aisle']
+
+  - name: stg_ticket_flights
+    description: "Table staging des segments de vol - Association billets-vols"
+    columns:
+      - name: ticket_no
+        description: "Numéro du billet"
+        tests:
+          - not_null
+      - name: flight_id
+        description: "Identifiant du vol"
+        tests:
+          - not_null
+      - name: fare_conditions
+        description: "Classe tarifaire du segment"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Economy', 'Comfort', 'Business']
+      - name: amount_cents
+        description: "Montant en centimes"
+        tests:
+          - not_null
+      - name: amount_dollars
+        description: "Montant en dollars"
+      - name: fare_tier
+        description: "Niveau de tarif (1=Economy, 2=Comfort, 3=Business)"
+
+  - name: stg_boarding_passes
+    description: "Table staging des cartes d'embarquement - Attribution des sièges"
+    columns:
+      - name: ticket_no
+        description: "Numéro du billet"
+        tests:
+          - not_null
+      - name: flight_id
+        description: "Identifiant du vol"
+        tests:
+          - not_null
+      - name: boarding_no
+        description: "Numéro d'ordre d'embarquement"
+        tests:
+          - not_null
+      - name: seat_no
+        description: "Numéro du siège attribué"
+        tests:
+          - not_null
+      - name: seat_row
+        description: "Rangée du siège"
+      - name: seat_position
+        description: "Position du siège"
+      - name: seat_location_type
+        description: "Type de siège (Window, Middle, Aisle)"
+      - name: boarding_group
+        description: "Groupe d'embarquement (Priority, Early, Regular)"
+        tests:
+          - accepted_values:
+              values: ['Priority', 'Early', 'Regular']
