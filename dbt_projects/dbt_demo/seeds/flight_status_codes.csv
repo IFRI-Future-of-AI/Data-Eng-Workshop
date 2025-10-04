@@ -1,0 +1,7 @@
+status_code,status_name,status_category,description
+SCH,Scheduled,Programmé,Vol programmé mais pas encore en embarquement
+OT,On Time,Programmé,Vol à l'heure et prêt pour l'embarquement
+DEL,Delayed,Programmé,Vol retardé
+DEP,Departed,En cours,Vol parti de l'aéroport de départ
+ARR,Arrived,Terminé,Vol arrivé à destination
+CAN,Cancelled,Annulé,Vol annulé
