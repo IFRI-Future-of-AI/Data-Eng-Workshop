@@ -1,0 +1,114 @@
+═══════════════════════════════════════════════════════════════════
+  FICHIERS CRÉÉS/MODIFIÉS - Projet dbt Airlines
+═══════════════════════════════════════════════════════════════════
+
+Total: 44 fichiers
+
+───────────────────────────────────────────────────────────────────
+  DOCUMENTATION MARKDOWN (4 fichiers)
+───────────────────────────────────────────────────────────────────
+✓ dbt_projects/dbt_demo/README.md
+✓ dbt_projects/dbt_demo/PROJECT_OVERVIEW.md
+✓ dbt_projects/DBT_PROJECT_GUIDE.md
+✓ dbt_projects/PROJECT_COMPLETION_SUMMARY.md
+
+───────────────────────────────────────────────────────────────────
+  CONFIGURATION (2 fichiers)
+───────────────────────────────────────────────────────────────────
+✓ dbt_projects/dbt_demo/dbt_project.yml (modifié)
+✓ dbt_projects/dbt_demo/profiles.yml (existant)
+
+───────────────────────────────────────────────────────────────────
+  SOURCES & DOCUMENTATION YAML (5 fichiers)
+───────────────────────────────────────────────────────────────────
+✓ dbt_projects/dbt_demo/models/schema.yml (modifié)
+✓ dbt_projects/dbt_demo/models/stagging/_stagging.yml (modifié)
+✓ dbt_projects/dbt_demo/models/silvers/_silvers.yml (créé)
+✓ dbt_projects/dbt_demo/models/golds/_golds.yml (créé)
+
+───────────────────────────────────────────────────────────────────
+  MODÈLES STAGING - BRONZE LAYER (8 fichiers)
+───────────────────────────────────────────────────────────────────
+✓ dbt_projects/dbt_demo/models/stagging/stg_bookings.sql (existant)
+✓ dbt_projects/dbt_demo/models/stagging/stg_tickets.sql (existant)
+✓ dbt_projects/dbt_demo/models/stagging/stg_fligths.sql (existant)
+✓ dbt_projects/dbt_demo/models/stagging/stg_airports.sql (créé)
+✓ dbt_projects/dbt_demo/models/stagging/stg_aircrafts.sql (créé)
+✓ dbt_projects/dbt_demo/models/stagging/stg_seats.sql (créé)
+✓ dbt_projects/dbt_demo/models/stagging/stg_ticket_flights.sql (créé)
+✓ dbt_projects/dbt_demo/models/stagging/stg_boarding_passes.sql (créé)
+
+───────────────────────────────────────────────────────────────────
+  MODÈLES INTERMEDIATE - SILVER LAYER (6 fichiers)
+───────────────────────────────────────────────────────────────────
+✓ dbt_projects/dbt_demo/models/silvers/tickets_with_bookings.sql (existant)
+✓ dbt_projects/dbt_demo/models/silvers/flights_enriched.sql (créé)
+✓ dbt_projects/dbt_demo/models/silvers/bookings_metrics.sql (créé)
+✓ dbt_projects/dbt_demo/models/silvers/passenger_journey.sql (créé)
+✓ dbt_projects/dbt_demo/models/silvers/aircraft_utilization.sql (créé)
+✓ dbt_projects/dbt_demo/models/silvers/airport_traffic.sql (créé)
+
+───────────────────────────────────────────────────────────────────
+  MODÈLES ANALYTICS - GOLD LAYER (6 fichiers)
+───────────────────────────────────────────────────────────────────
+✓ dbt_projects/dbt_demo/models/golds/fct_bookings.sql (créé)
+✓ dbt_projects/dbt_demo/models/golds/fct_flights.sql (créé)
+✓ dbt_projects/dbt_demo/models/golds/dim_airports.sql (créé)
+✓ dbt_projects/dbt_demo/models/golds/dim_aircrafts.sql (créé)
+✓ dbt_projects/dbt_demo/models/golds/dim_passengers.sql (créé)
+✓ dbt_projects/dbt_demo/models/golds/dim_dates.sql (créé)
+
+───────────────────────────────────────────────────────────────────
+  MACROS (7 fichiers)
+───────────────────────────────────────────────────────────────────
+✓ dbt_projects/dbt_demo/macros/get_flight_duration.sql (créé)
+✓ dbt_projects/dbt_demo/macros/calculate_delay.sql (créé)
+✓ dbt_projects/dbt_demo/macros/categorize_flight_status.sql (créé)
+✓ dbt_projects/dbt_demo/macros/extract_phone_number.sql (créé)
+✓ dbt_projects/dbt_demo/macros/extract_email.sql (créé)
+✓ dbt_projects/dbt_demo/macros/cents_to_currency.sql (créé)
+✓ dbt_projects/dbt_demo/macros/generate_surrogate_key.sql (créé)
+
+───────────────────────────────────────────────────────────────────
+  SEEDS - DONNÉES DE RÉFÉRENCE (4 fichiers)
+───────────────────────────────────────────────────────────────────
+✓ dbt_projects/dbt_demo/seeds/mock_data.csv (existant)
+✓ dbt_projects/dbt_demo/seeds/flight_status_mapping.csv (créé)
+✓ dbt_projects/dbt_demo/seeds/fare_conditions_mapping.csv (créé)
+✓ dbt_projects/dbt_demo/seeds/airport_regions.csv (créé)
+
+───────────────────────────────────────────────────────────────────
+  ANALYSES - REQUÊTES MÉTIER (5 fichiers)
+───────────────────────────────────────────────────────────────────
+✓ dbt_projects/dbt_demo/analyses/top_routes_analysis.sql (créé)
+✓ dbt_projects/dbt_demo/analyses/revenue_analysis.sql (créé)
+✓ dbt_projects/dbt_demo/analyses/occupancy_rate_analysis.sql (créé)
+✓ dbt_projects/dbt_demo/analyses/delay_analysis.sql (créé)
+✓ dbt_projects/dbt_demo/analyses/passenger_segmentation.sql (créé)
+
+───────────────────────────────────────────────────────────────────
+  TESTS PERSONNALISÉS (5 fichiers)
+───────────────────────────────────────────────────────────────────
+✓ dbt_projects/dbt_demo/tests/assert_positive_amounts.sql (créé)
+✓ dbt_projects/dbt_demo/tests/assert_flight_duration_positive.sql (créé)
+✓ dbt_projects/dbt_demo/tests/assert_arrival_after_departure.sql (créé)
+✓ dbt_projects/dbt_demo/tests/assert_booking_has_tickets.sql (créé)
+✓ dbt_projects/dbt_demo/tests/assert_seat_assigned_once_per_flight.sql (créé)
+
+───────────────────────────────────────────────────────────────────
+
+RÉSUMÉ PAR TYPE:
+  • Documentation:        4 fichiers Markdown
+  • Configuration:        2 fichiers YAML
+  • Documentation modèles: 5 fichiers YAML
+  • Modèles SQL:          20 fichiers (8+6+6)
+  • Macros:               7 fichiers
+  • Seeds:                4 fichiers CSV
+  • Analyses:             5 fichiers SQL
+  • Tests:                5 fichiers SQL + 50+ dans YAML
+
+TOTAL: 44 FICHIERS CRÉÉS/MODIFIÉS
+
+═══════════════════════════════════════════════════════════════════
+  Projet dbt Airlines - COMPLET ET DOCUMENTÉ
+═══════════════════════════════════════════════════════════════════
