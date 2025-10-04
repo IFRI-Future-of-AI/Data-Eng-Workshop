@@ -52,7 +52,7 @@ models:
         tests:
           - unique
           - not_null
-      - name: no
+      - name: "no"
         description: "Numéro de vol commercial"
         tests:
           - not_null
