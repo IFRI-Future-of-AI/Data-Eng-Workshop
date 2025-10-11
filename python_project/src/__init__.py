@@ -1,4 +1,7 @@
 from .download import download_data_month_to_month
-# from .transform import transform_data
-# from .save import save_data
-# from .visualize import visualize_data
+from .constants import DATABASE_NAME
+from .database import create_database_in_postgresql_database
+from .save import save_all_files_in_folder_in_postgresql_database
+
+
+create_database_in_postgresql_database(DATABASE_NAME)
