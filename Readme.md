@@ -4,6 +4,7 @@
 
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://www.docker.com/)
+[![dbt](https://img.shields.io/badge/dbt-1.0+-FF694B?logo=dbt)](https://www.getdbt.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 ## 📋 Table des Matières
@@ -13,6 +14,7 @@
 - [🚀 Démarrage Rapide](#-démarrage-rapide)
 - [📊 Structure du Projet](#-structure-du-projet)
 - [💡 Exercices SQL](#-exercices-sql)
+- [🚀 Projet dbt - Data Build Tool](#-projet-dbt---data-build-tool)
 - [📚 Ressources](#-ressources)
 - [👤 Auteur](#-auteur)
 - [📜 Licence](#-licence)
@@ -23,6 +25,7 @@ Ce workshop propose une approche pratique de l'ingénierie des données à trave
 - **Manipulation de données** avec PostgreSQL
 - **Requêtes SQL avancées** (JOINs, agrégations, fonctions window)
 - **Pipeline de données** avec Docker
+- **Transformation de données** avec dbt (data build tool)
 - **Analyse de données** sur un dataset réaliste d'une compagnie aérienne
 
 ## 🏗️ Architecture de la Base de Données
@@ -96,6 +99,8 @@ Data-Eng-Workshop/
 │   └── schema.png      # Schéma de la base de données
 ├── 📁 data/            # Données de démonstration
 │   └── demo-small-en.sql
+├── 📁 dbt_projects/    # Projets dbt pour la transformation de données
+│   └── dbt_demo/       # Projet dbt avec modèles, tests et analyses
 ├── 📁 pdf/             # Présentations du workshop
 ├── 📁 sql/             # Scripts SQL avancés
 ├── 📄 Database.md      # Documentation du schéma
@@ -132,16 +137,90 @@ Consultez le fichier [Request.md](Request.md) pour tous les exercices SQL avec :
 - 🎯 **Objectifs pédagogiques**
 - 🔍 **Solutions expliquées**
 
+## 🚀 Projet dbt - Data Build Tool
+
+Le workshop inclut maintenant un projet dbt complet pour la transformation et la modélisation des données !
+
+### 🎯 Vue d'ensemble
+
+dbt (data build tool) permet de transformer les données directement dans votre entrepôt de données en utilisant du SQL. Le projet dbt inclus dans ce workshop implémente une architecture moderne en 3 couches :
+
+- **🔄 Staging** : Nettoyage et standardisation des données sources (8 modèles)
+- **⚙️ Intermediate** : Enrichissement et agrégation des données (3 modèles)
+- **📊 Marts** : Tables finales optimisées pour l'analyse (5 modèles)
+
+### 📦 Contenu du Projet dbt
+
+Le projet `dbt_projects/dbt_demo/` comprend :
+
+- **16 modèles SQL** organisés en couches (staging, intermediate, marts)
+- **6 macros réutilisables** pour les transformations courantes
+- **4 seeds** (données de référence en CSV)
+- **5 analyses métier** prêtes à l'emploi
+- **80+ tests de qualité** des données
+- **Documentation complète** avec lineage interactif
+
+### 🎨 KPIs et Analyses Disponibles
+
+Le projet dbt permet de calculer des KPIs critiques :
+
+#### Finance
+- Revenus totaux et par période
+- Revenu moyen par passager
+- Distribution par classe tarifaire
+
+#### Opérations
+- Taux de ponctualité des vols
+- Retards moyens
+- Taux d'occupation des vols
+- Performance par route/appareil
+
+#### Clients
+- Lifetime value
+- Nombre de vols par passager
+- Segmentation et fidélisation
+
+### ⚡ Démarrage Rapide dbt
+
+```bash
+# 1. Installer dbt
+pip install dbt-postgres
+
+# 2. Naviguer vers le projet
+cd dbt_projects/dbt_demo
+
+# 3. Tester la connexion
+dbt debug
+
+# 4. Exécuter le pipeline complet
+dbt build
+
+# 5. Générer et visualiser la documentation
+dbt docs generate
+dbt docs serve
+```
+
+### 📚 Documentation dbt
+
+Pour plus d'informations, consultez :
+- 📖 [README du projet dbt](dbt_projects/dbt_demo/README.md) - Guide principal
+- ⚡ [Guide de démarrage rapide](dbt_projects/dbt_demo/QUICKSTART.md) - Opérationnel en 5 minutes
+- 🏗️ [Architecture détaillée](dbt_projects/dbt_demo/STRUCTURE.md) - Structure complète du projet
+- 💡 [Suggestions d'amélioration](dbt_projects/dbt_demo/SUGGESTIONS.md) - Évolutions futures
+
 ## 📚 Ressources
 
 ### 📖 Documentation
 - [Documentation PostgreSQL](https://www.postgresql.org/docs/)
 - [Guide SQL pour Débutants](https://www.w3schools.com/sql/)
 - [Docker Compose Guide](https://docs.docker.com/compose/)
+- [Documentation dbt](https://docs.getdbt.com/) - Guide complet de dbt
+- [dbt Best Practices](https://docs.getdbt.com/guides/best-practices) - Bonnes pratiques
 
 ### 🔧 Outils Recommandés
 - **IDE SQL** : [DBeaver](https://dbeaver.io/), [pgAdmin](https://www.pgadmin.org/)
 - **Client Terminal** : `psql`
+- **Transformation de données** : [dbt](https://www.getdbt.com/)
 - **Visualisation** : [Grafana](https://grafana.com/), [Metabase](https://www.metabase.com/)
 
 ### 📊 Dataset
