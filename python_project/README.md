@@ -234,7 +234,7 @@ python_project/
 # URLs et chemins
 NYC_TRIPS_URL = "https://d37ci6vzurychx.cloudfront.net/trip-data/..."
 TAXI_ZONE_URL = "https://d37ci6vzurychx.cloudfront.net/misc/..."
-DATASET_FOLDER = 'yellow_tripdata'
+DATSET_FOLDER = 'yellow_tripdata'  # Note: typo dans le nom de variable
 DATABASE_NAME = "workshop"
 
 # Mapping de types pour PostgreSQL
