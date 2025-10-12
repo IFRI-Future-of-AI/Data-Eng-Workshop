@@ -49,6 +49,9 @@ def get_list_of_files_in_folder(folder_path: str) -> list:
         list: A list of files in the folder.
     """
     import os
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path, exist_ok=True)
+        logger.info(f"Created folder: {folder_path} \n")
     return [f for f in os.listdir(folder_path) if f.endswith('.parquet')]
 
 def save_file_in_postgresql_database(file_path: str, table_name: str):

@@ -1,5 +1,5 @@
-NYC_TRIPS_URL = "https://d37ci6vzurychx.cloudfront.net/trip-data/fhvhv_tripdata_{}-{}.parquet"
-DATSET_FOLDER = 'fhvhv_tripdata'
+NYC_TRIPS_URL = "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_{}-{}.parquet"
+DATSET_FOLDER = 'yellow_tripdata'
 
 
 DATABASE_NAME = "workshop"

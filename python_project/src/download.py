@@ -83,7 +83,7 @@ def generate_month_range(start_month : str = '2009-01',
             list: Month range
     """
     start_year, start_month = int(start_month[:4]), int(start_month[5:])
-    end_year, end_month = int(end_month[:4]), int(end_month[4:])
+    end_year, end_month = int(end_month[:4]), int(end_month[5:])  # Correction ici: end_month[5:] au lieu de end_month[4:]
     month_range = []
     for year in range(start_year, end_year + 1):
         for month in range(start_month if year == start_year else 1, end_month + 1 if year == end_year else 13):
