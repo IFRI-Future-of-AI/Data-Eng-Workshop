@@ -1,7 +1,7 @@
 from .logger import configure_logging
 import requests
 import polars as pl 
-from .constants import NYC_TRIPS_URL, DATSET_FOLDER
+from .constants import NYC_TRIPS_URL, DATSET_FOLDER, TAXI_ZONE_URL
 import os
 
 logger = configure_logging(log_file="download.log", logger_name="download")
@@ -119,7 +119,7 @@ def download_taxi_zones() -> None:
     """
     Télécharge le fichier des zones de taxi, le convertit en parquet et supprime le CSV.
     """
-    url = "https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv"
+    url = TAXI_ZONE_URL
     csv_path = "./data/yellow_tripdata/taxi_zones.csv"
     parquet_path = "./data/yellow_tripdata/taxi_zones.parquet"
     
