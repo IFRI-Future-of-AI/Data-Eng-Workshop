@@ -10,11 +10,13 @@
 ## 📋 Table des Matières
 
 - [🎯 Objectif du Workshop](#-objectif-du-workshop)
+- [⏺️ Sessions Enregistrées](#️-sessions-enregistrées)
 - [🏗️ Architecture de la Base de Données](#️-architecture-de-la-base-de-données)
 - [🚀 Démarrage Rapide](#-démarrage-rapide)
 - [📊 Structure du Projet](#-structure-du-projet)
 - [💡 Exercices SQL](#-exercices-sql)
 - [🚀 Projet dbt - Data Build Tool](#-projet-dbt---data-build-tool)
+- [🐍 Projet Python - Pipeline ETL](#-projet-python---pipeline-etl)
 - [📚 Ressources](#-ressources)
 - [👤 Auteur](#-auteur)
 - [📜 Licence](#-licence)
@@ -26,7 +28,19 @@ Ce workshop propose une approche pratique de l'ingénierie des données à trave
 - **Requêtes SQL avancées** (JOINs, agrégations, fonctions window)
 - **Pipeline de données** avec Docker
 - **Transformation de données** avec dbt (data build tool)
-- **Analyse de données** sur un dataset réaliste d'une compagnie aérienne
+- **Projets Python** orientés Data Engineering
+- **Analyse de données** sur des datasets réalistes
+
+## ⏺️ Sessions Enregistrées
+
+Retrouvez nos précédentes sessions enregistrées :
+
+1. **Introduction au Data Engineering** : [https://kloo.me/dataeng-workshop-1](https://kloo.me/dataeng-workshop-1)
+2. **SQL pour le Data Engineering Partie 1** : [https://kloo.me/dataeng-workshop-2](https://kloo.me/dataeng-workshop-2)
+3. **SQL pour le Data Engineering Partie 2** : [https://kloo.me/dataeng-workshop-3](https://kloo.me/dataeng-workshop-3)
+4. **Transformation des données avec dbt** : [https://kloo.me/dataeng-workshop-4](https://kloo.me/dataeng-workshop-4)
+
+📦 **Repository** : [https://github.com/IFRI-Future-of-AI/Data-Eng-Workshop](https://github.com/IFRI-Future-of-AI/Data-Eng-Workshop)
 
 ## 🏗️ Architecture de la Base de Données
 
@@ -101,7 +115,14 @@ Data-Eng-Workshop/
 │   └── demo-small-en.sql
 ├── 📁 dbt_projects/    # Projets dbt pour la transformation de données
 │   └── dbt_demo/       # Projet dbt avec modèles, tests et analyses
+├── 📁 notebooks/       # Notebooks Jupyter pédagogiques
+│   └── 03-Organisation projet.ipynb  # Guide d'organisation de projet
 ├── 📁 pdf/             # Présentations du workshop
+├── 📁 python_project/  # 🆕 Projet Python complet (Pipeline ETL)
+│   ├── src/            # Code source modulaire
+│   ├── main.py         # Point d'entrée du pipeline
+│   ├── pyproject.toml  # Configuration et dépendances
+│   └── README.md       # Documentation détaillée
 ├── 📁 sql/             # Scripts SQL avancés
 ├── 📄 Database.md      # Documentation du schéma
 ├── 📄 Request.md       # Exercices SQL détaillés
@@ -208,6 +229,77 @@ Pour plus d'informations, consultez :
 - 🏗️ [Architecture détaillée](dbt_projects/dbt_demo/STRUCTURE.md) - Structure complète du projet
 - 💡 [Suggestions d'amélioration](dbt_projects/dbt_demo/SUGGESTIONS.md) - Évolutions futures
 
+## 🐍 Projet Python - Pipeline ETL
+
+Le workshop inclut maintenant un projet Python complet illustrant les bonnes pratiques de Data Engineering !
+
+### 🎯 Vue d'ensemble
+
+Le projet `python_project/` implémente un pipeline ETL (Extract, Transform, Load) moderne pour gérer les données des taxis NYC. Il démontre une architecture modulaire et des patterns professionnels de Data Engineering.
+
+### 📦 Contenu du Projet Python
+
+- **🔄 ETL complet** : Téléchargement, transformation et chargement de données
+- **📊 Polars** : Utilisation de la bibliothèque DataFrame moderne et performante
+- **🗄️ PostgreSQL** : Ingestion automatique dans une base de données
+- **📝 Logging structuré** : Traçabilité complète de toutes les opérations
+- **⚙️ Configuration** : Gestion moderne avec `.env` et `uv`
+- **🎨 Architecture modulaire** : Code réutilisable et maintenable
+
+### 🚀 Caractéristiques Clés
+
+#### Architecture
+- ✅ Séparation des responsabilités (download, database, save, transform)
+- ✅ Package Python structuré avec `src/`
+- ✅ Gestion de configuration centralisée
+
+#### Qualité de Code
+- ✅ Docstrings complètes et type hints
+- ✅ Logging multi-niveau (fichier + console)
+- ✅ Gestion d'erreurs robuste
+- ✅ Téléchargement incrémental
+
+#### Performance
+- ✅ Utilisation de Polars (plus rapide que Pandas)
+- ✅ Format Parquet pour compression efficace
+- ✅ Chargement par batch
+
+### ⚡ Démarrage Rapide Python
+
+```bash
+# 1. Naviguer vers le projet
+cd python_project
+
+# 2. Installer les dépendances avec uv
+uv venv
+source .venv/bin/activate
+uv pip install -e .
+
+# 3. Configurer PostgreSQL (si nécessaire)
+cd .. && docker compose up -d && cd python_project
+
+# 4. Exécuter le pipeline
+python main.py
+```
+
+### 📚 Documentation Python
+
+Pour plus d'informations, consultez :
+- 📖 [README du projet Python](python_project/README.md) - Documentation complète
+- 🔧 [Organisation de Projet](notebooks/03-Organisation%20projet.ipynb) - Bonnes pratiques
+
+### 🎓 Ce que vous apprendrez
+
+- Architecture d'un projet Python moderne pour le Data Engineering
+- Gestion de dépendances avec `uv`
+- Patterns ETL professionnels
+- Logging et observabilité
+- Configuration avec variables d'environnement
+- Utilisation de Polars pour la manipulation de données
+- Ingestion de données dans PostgreSQL
+
+---
+
 ## 📚 Ressources
 
 ### 📖 Documentation
@@ -216,6 +308,8 @@ Pour plus d'informations, consultez :
 - [Docker Compose Guide](https://docs.docker.com/compose/)
 - [Documentation dbt](https://docs.getdbt.com/) - Guide complet de dbt
 - [dbt Best Practices](https://docs.getdbt.com/guides/best-practices) - Bonnes pratiques
+- [Polars Documentation](https://pola-rs.github.io/polars-book/) - DataFrame moderne
+- [uv Package Manager](https://github.com/astral-sh/uv) - Gestionnaire Python rapide
 
 ### 🔧 Outils Recommandés
 - **IDE SQL** : [DBeaver](https://dbeaver.io/), [pgAdmin](https://www.pgadmin.org/)
