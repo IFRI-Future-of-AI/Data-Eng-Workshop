@@ -40,13 +40,7 @@ def create_database_in_postgresql_database(database_name: str):
     Args:
         database_name (str): The name of the database to create.
     """
-    conn = connect(
-        dbname="postgres",
-        user=POSTGRESQL_USER,
-        password=POSTGRESQL_PASSWORD,
-        host=POSTGRESQL_HOST,
-        port=POSTGRESQL_PORT,
-    )
+    conn = connect_to_postgresql_database(database_name='postgres')
     conn.autocommit = True
     cur = conn.cursor()
     cur.execute(f"SELECT 1 FROM pg_database WHERE datname = '{database_name}';")

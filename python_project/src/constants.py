@@ -9,7 +9,9 @@ DATABASE_NAME = "workshop"
 SCHEMA_MAPPING = {
     'String': 'VARCHAR',
     'Int64': 'BIGINT',
+    'Int32': 'INTEGER',
     'Float64': 'DOUBLE PRECISION',
+    'Float32': 'REAL',
     'Datetime(time_unit=\'ns\', time_zone=None)': 'TIMESTAMP',
-'Null': 'VARCHAR'
+    'Null': 'VARCHAR'
 }

@@ -6,7 +6,7 @@ from src import (
 def main():
     download_taxi_zones()
     download_data_month_to_month(
-        start_month='2024-01', 
+        start_month='2023-11', 
         end_month='2025-10'
     )
     save_all_files_in_folder_in_postgresql_database()
