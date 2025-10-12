@@ -114,3 +114,39 @@ def download_data_month_to_month(
         except Exception as e:
             logger.error(f"Failed to download data for {year}-{month_num}, error: {e}")
     logger.info(f"Downloaded data from {start_month} to {end_month} to {download_dir}")
+    
+def download_taxi_zones() -> None:
+    """
+    Télécharge le fichier des zones de taxi, le convertit en parquet et supprime le CSV.
+    """
+    url = "https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv"
+    csv_path = "./data/yellow_tripdata/taxi_zones.csv"
+    parquet_path = "./data/yellow_tripdata/taxi_zones.parquet"
+    
+    # Création du dossier si nécessaire
+    os.makedirs("./data/yellow_tripdata", exist_ok=True)
+    
+    # Téléchargement du fichier
+    logger.info(f"Téléchargement des zones de taxi depuis {url}")
+    response = requests.get(url)
+    
+    if response.status_code != 200:
+        logger.error(f"Échec du téléchargement des zones de taxi. Code: {response.status_code}")
+        return
+        
+    # Sauvegarde du CSV
+    with open(csv_path, "wb") as f:
+        f.write(response.content)
+    logger.info(f"Fichier CSV sauvegardé: {csv_path}")
+    
+    # Conversion en parquet
+    try:
+        df = pl.read_csv(csv_path)
+        df.write_parquet(parquet_path)
+        logger.info(f"Fichier converti en parquet: {parquet_path}")
+        
+        # Suppression du CSV
+        os.remove(csv_path)
+        logger.info("Fichier CSV supprimé")
+    except Exception as e:
+        logger.error(f"Erreur lors de la conversion: {str(e)}")

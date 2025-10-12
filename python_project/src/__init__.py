@@ -1,4 +1,4 @@
-from .download import download_data_month_to_month
+from .download import download_data_month_to_month, download_taxi_zones
 from .constants import DATABASE_NAME
 from .database import create_database_in_postgresql_database
 from .save import save_all_files_in_folder_in_postgresql_database
