@@ -133,7 +133,7 @@ uv pip install -e .
 Avec **pip** (alternative) :
 
 ```bash
-pip install -r pyproject.toml
+pip install -e .
 ```
 
 ### 4. Lancer PostgreSQL (si nécessaire)
@@ -234,6 +234,7 @@ python_project/
 # URLs et chemins
 NYC_TRIPS_URL = "https://d37ci6vzurychx.cloudfront.net/trip-data/..."
 TAXI_ZONE_URL = "https://d37ci6vzurychx.cloudfront.net/misc/..."
+DATASET_FOLDER = 'yellow_tripdata'
 DATABASE_NAME = "workshop"
 
 # Mapping de types pour PostgreSQL
