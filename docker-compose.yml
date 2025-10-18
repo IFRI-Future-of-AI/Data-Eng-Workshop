@@ -15,7 +15,22 @@ services:
       - ./data/demo-small-en.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
       - "5432:5432"
+
+
+  superset:
+    build:
+      context: ./visualisation/superset
+      dockerfile: Dockerfile
+    container_name: superset
+    environment:
+      - ADMIN_USERNAME=admin
+      - ADMIN_EMAIL=admin@superset.com
+      - ADMIN_PASSWORD=admin
+      - LOAD_EXAMPLES=yes
+    ports:
+      - '8088:8088'
+    volumes:
+      - ./visualisation/superset/superset_config.py:/app/superset_config.py
+
 volumes:
   postgres-db-volume:
-
-# docker compose up -d

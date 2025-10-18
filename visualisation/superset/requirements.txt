@@ -1,0 +1,7 @@
+psycopg2
+mysqlclient 
+psycopg2-binary
+Pillow
+openpyxl
+Authlib
+pymssql
