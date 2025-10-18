@@ -5,3 +5,8 @@ Pillow
 openpyxl
 Authlib
 pymssql
+# clickhouse-connect>=0.6.8
+# sqlalchemy-bigquery
+# snowflake-sqlalchemy
+# sqlalchemy-redshift
+cryptography

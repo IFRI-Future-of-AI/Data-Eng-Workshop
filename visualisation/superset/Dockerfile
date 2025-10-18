@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y \
 
 # Installation des dépendances Python
 COPY requirements.txt /app/requirements.txt
-RUN pip install -r requirements.txt
+#RUN pip install uv 
+RUN pip install -r requirements.txt 
 
 # Configuration de Superset
 ENV ADMIN_USERNAME=admin \

@@ -5,7 +5,6 @@ Il combine statistiques traditionnelles et avancées, idéal pour analyser les p
 Les données proviennent de sources fiables afin de garantir qualité et cohérence à chaque enregistrement.
 
 
-
 ## 📋 Description des colonnes
 
 | Colonne | Signification |
