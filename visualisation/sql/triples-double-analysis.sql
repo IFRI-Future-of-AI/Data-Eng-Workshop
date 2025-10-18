@@ -1,40 +1,52 @@
 SELECT
-  "Tm",
-  COUNT(*) AS row_count,
-  ROUND(SUM("MP")::numeric, 2)       AS total_mp,
-  ROUND(SUM("FG")::numeric, 2)       AS total_fg,
-  ROUND(SUM("FGA")::numeric, 2)      AS total_fg_attempt,
-  ROUND(
-    CASE WHEN SUM("FGA") = 0 THEN NULL
-         ELSE SUM("FG")::numeric / NULLIF(SUM("FGA"),0)
-    END
-  , 2)                                AS fg_pct_weighted,
-  ROUND(AVG("FG%")::numeric, 2)      AS avg_fg_percentage,
-  ROUND(SUM("3P")::numeric, 2)       AS total_3p,
-  ROUND(SUM("3PA")::numeric, 2)      AS total_3p_attempt,
-  ROUND(
-    CASE WHEN SUM("3PA") = 0 THEN NULL
-         ELSE SUM("3P")::numeric / NULLIF(SUM("3PA"),0)
-    END
-  , 2)                                AS threep_pct_weighted,
-  ROUND(AVG("3P%")::numeric, 2)      AS avg_3p_percentage,
-  ROUND(SUM("FT")::numeric, 2)       AS total_ft,
-  ROUND(SUM("FTA")::numeric, 2)      AS total_ft_attempt,
-  ROUND(
-    CASE WHEN SUM("FTA") = 0 THEN NULL
-         ELSE SUM("FT")::numeric / NULLIF(SUM("FTA"),0)
-    END
-  , 2)                                AS ft_pct_weighted,
-  ROUND(AVG("FT%")::numeric, 2)      AS avg_ft_percentage,
-  ROUND(SUM("ORB")::numeric, 2)      AS total_orb,
-  ROUND(SUM("DRB")::numeric, 2)      AS total_drb,
-  ROUND(SUM("TRB")::numeric, 2)      AS total_trb,
-  ROUND(SUM("AST")::numeric, 2)      AS total_ast,
-  ROUND(SUM("STL")::numeric, 2)      AS total_stl,
-  ROUND(SUM("BLK")::numeric, 2)      AS total_blk,
-  ROUND(SUM("TOV")::numeric, 2)      AS total_tov,
-  ROUND(SUM("PF")::numeric, 2)       AS total_pf,
-  ROUND(SUM("PTS")::numeric, 2)      AS total_pts
+  "Player",
+  "Tm"           AS team,
+  "Opp"          AS opponent,
+  "Res",
+  "Date",
+  "MP",
+  "FG",
+  "FGA",
+  "FG%",
+  "3P",
+  "3PA",
+  "3P%",
+  "FT",
+  "FTA",
+  "FT%",
+  "ORB",
+  "DRB",
+  "TRB",
+  "AST",
+  "STL",
+  "BLK",
+  "TOV",
+  "PF",
+  "PTS",
+  "GmSc",
+  -- nombre de catégories >= 10 (PTS, TRB, AST, STL, BLK)
+  (
+    (CASE WHEN "PTS" >= 10 THEN 1 ELSE 0 END)
+  + (CASE WHEN "TRB" >= 10 THEN 1 ELSE 0 END)
+  + (CASE WHEN "AST" >= 10 THEN 1 ELSE 0 END)
+  + (CASE WHEN "STL" >= 10 THEN 1 ELSE 0 END)
+  + (CASE WHEN "BLK" >= 10 THEN 1 ELSE 0 END)
+  ) AS categories_ge_10,
+  -- liste des catégories qui sont >= 10
+  CONCAT_WS(', ',
+    CASE WHEN "PTS" >= 10 THEN 'PTS' END,
+    CASE WHEN "TRB" >= 10 THEN 'TRB' END,
+    CASE WHEN "AST" >= 10 THEN 'AST' END,
+    CASE WHEN "STL" >= 10 THEN 'STL' END,
+    CASE WHEN "BLK" >= 10 THEN 'BLK' END
+  ) AS categories_list
 FROM public.nba_stats_2024_2025
-GROUP BY "Tm"
-ORDER BY total_pts DESC;
+WHERE
+  (
+    (CASE WHEN "PTS" >= 10 THEN 1 ELSE 0 END)
+  + (CASE WHEN "TRB" >= 10 THEN 1 ELSE 0 END)
+  + (CASE WHEN "AST" >= 10 THEN 1 ELSE 0 END)
+  + (CASE WHEN "STL" >= 10 THEN 1 ELSE 0 END)
+  + (CASE WHEN "BLK" >= 10 THEN 1 ELSE 0 END)
+  ) >= 3
+ORDER BY "Player", "Date" DESC
