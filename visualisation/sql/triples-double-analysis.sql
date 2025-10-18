@@ -3,7 +3,7 @@ SELECT
   "Tm"           AS team,
   "Opp"          AS opponent,
   "Res",
-  "Date",
+  "Date"::DATE AS Date,
   "MP",
   "FG",
   "FGA",
