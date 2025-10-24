@@ -97,7 +97,7 @@ A **DAG** is a collection of tasks organized to reflect their relationships and 
 
 **Example:**
 ```python
-from airflow.sdk import DAG
+from airflow import DAG
 from datetime import datetime
 
 with DAG(
@@ -129,7 +129,7 @@ A **Task** is a unit of work within a DAG. It represents a single operation in y
 
 **Example:**
 ```python
-from airflow.sdk.decorators import task
+from airflow.decorators import task
 
 @task
 def my_function():
@@ -177,7 +177,7 @@ with TaskGroup('data_processing') as processing_group:
 
 ```python
 # BashOperator - Run bash commands
-from airflow.providers.standard.operators.bash import BashOperator
+from airflow.operators.bash import BashOperator
 
 bash_task = BashOperator(
     task_id='run_script',
@@ -185,7 +185,7 @@ bash_task = BashOperator(
 )
 
 # PythonOperator - Run Python functions
-from airflow.providers.standard.operators.python import PythonOperator
+from airflow.operators.python import PythonOperator
 
 def my_function():
     print("Hello from Python")
@@ -196,7 +196,7 @@ python_task = PythonOperator(
 )
 
 # EmailOperator - Send emails
-from airflow.providers.standard.operators.email import EmailOperator
+from airflow.operators.email import EmailOperator
 
 email_task = EmailOperator(
     task_id='send_email',
@@ -214,43 +214,531 @@ email_task = EmailOperator(
 
 ### 5. Connections
 
-**Connections** store credentials and connection details for external systems.
+**Connections** store credentials and connection details for external systems securely. They enable tasks to interact with databases, APIs, cloud services, and other external resources without hardcoding credentials.
 
 **Managing Connections:**
-- Via Web UI: Admin → Connections
-- Via CLI: `airflow connections add`
-- Via Environment Variables: `AIRFLOW_CONN_{CONN_ID}`
+- **Via Web UI**: Admin → Connections → Add
+- **Via CLI**: `airflow connections add my_conn --conn-type postgres --conn-host localhost --conn-login user --conn-password pass`
+- **Via Environment Variables**: `AIRFLOW_CONN_{CONN_ID}` (format: `type://user:password@host:port/schema`)
 
-**Example:**
+**Common Connection Types:**
+- `postgres`, `mysql`, `sqlite` - Databases
+- `http`, `https` - HTTP APIs
+- `aws`, `google_cloud_platform`, `azure` - Cloud providers
+- `ftp`, `sftp`, `ssh` - File transfers
+- `slack`, `email` - Notifications
+
+**Example Usage:**
 ```python
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
-hook = PostgresHook(postgres_conn_id='my_postgres_connection')
-records = hook.get_records('SELECT * FROM users')
+# Using connection in a task
+@task
+def query_database():
+    hook = PostgresHook(postgres_conn_id='my_postgres_connection')
+    records = hook.get_records('SELECT * FROM users WHERE active = true')
+    return len(records)
+
+# Using connection with operators
+from airflow.providers.postgres.operators.postgres import PostgresOperator
+
+create_table = PostgresOperator(
+    task_id='create_table',
+    postgres_conn_id='my_postgres_connection',
+    sql='''
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(100),
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+    '''
+)
 ```
+
+**Best Practices:**
+- Never hardcode credentials in DAG files
+- Use descriptive connection IDs (`prod_postgres_db`, `staging_api`)
+- Store sensitive data in Airflow Connections, not Variables
+- Test connections before using in production
+- Document required connections in DAG docstrings
 
 ### 6. XCom (Cross-Communication)
 
-**XCom** enables tasks to exchange data.
+**XCom** (short for "cross-communication") enables tasks to exchange small amounts of data. XComs are stored in Airflow's metadata database and identified by a key, task_id, and dag_id.
 
-**Example:**
+**How XCom Works:**
+- Tasks can **push** values to XCom (explicitly or via return values)
+- Other tasks can **pull** values from XCom
+- With TaskFlow API, XCom is handled automatically
+
+**Example - Explicit Push/Pull:**
+```python
+from airflow.operators.python import PythonOperator
+
+def push_function(**context):
+    # Explicitly push to XCom
+    context['ti'].xcom_push(key='my_key', value='my_value')
+
+def pull_function(**context):
+    # Pull from XCom
+    value = context['ti'].xcom_pull(key='my_key', task_ids='push_task')
+    print(f"Retrieved: {value}")
+
+push_task = PythonOperator(
+    task_id='push_task',
+    python_callable=push_function
+)
+
+pull_task = PythonOperator(
+    task_id='pull_task',
+    python_callable=pull_function
+)
+
+push_task >> pull_task
+```
+
+**Example - TaskFlow API (Automatic):**
 ```python
 @task
 def extract():
-    return {'data': [1, 2, 3]}
+    # Return value is automatically pushed to XCom
+    return {'data': [1, 2, 3], 'count': 3}
 
 @task
 def transform(data):
-    return {'processed': data['data']}
+    # Parameter automatically pulls from XCom
+    processed = [x * 2 for x in data['data']]
+    return {'processed': processed, 'count': data['count']}
 
-# Data flows automatically with TaskFlow API
-result = transform(extract())
+@task
+def load(result):
+    print(f"Loading {result['count']} processed items")
+
+# Data flows automatically
+result = extract()
+transformed = transform(result)
+load(transformed)
 ```
 
-**Limitations:**
-- XCom values stored in metadata DB (limit size)
-- Use for metadata, not large datasets
-- For large data, use external storage (S3, HDFS, etc.)
+**XCom Best Practices:**
+- ✅ Use for small metadata (IDs, counts, statuses, file paths)
+- ✅ Use TaskFlow API for cleaner code
+- ✅ Keep XCom values under 1MB (database limitations)
+- ❌ Don't use for large datasets or binary data
+- ❌ Don't rely on XCom for long-term storage
+- 💡 For large data, store in S3/GCS/HDFS and pass the path via XCom
+
+**Custom XCom Backends:**
+For larger data, you can configure custom XCom backends (S3, GCS) that store data externally and only store references in the database:
+```python
+# In airflow.cfg
+[core]
+xcom_backend = airflow.providers.amazon.aws.xcom_backends.s3.S3XComBackend
+```
+
+### 7. Variables
+
+**Variables** are key-value pairs stored in Airflow's metadata database for runtime configuration. They allow you to parameterize your DAGs without modifying code.
+
+**Managing Variables:**
+- **Via Web UI**: Admin → Variables → Add
+- **Via CLI**: `airflow variables set my_var "my_value"`
+- **Via Python**: `Variable.get('my_var')`
+
+**Example Usage:**
+```python
+from airflow.models import Variable
+
+@task
+def process_data():
+    # Get variable (throws KeyError if not found)
+    api_key = Variable.get("api_key")
+    
+    # Get with default value
+    batch_size = Variable.get("batch_size", default_var=100)
+    
+    # Get JSON variable
+    config = Variable.get("db_config", deserialize_json=True)
+    # Returns: {'host': 'localhost', 'port': 5432}
+    
+    print(f"Processing with batch size: {batch_size}")
+
+# Using variables in DAG definition
+max_active_runs = int(Variable.get("max_active_runs", default_var="1"))
+
+with DAG(
+    dag_id='my_dag',
+    max_active_runs=max_active_runs,
+    ...
+) as dag:
+    process_data()
+```
+
+**Best Practices:**
+- ✅ Use Variables for configuration that changes between environments
+- ✅ Store JSON objects for complex configurations
+- ✅ Set default values to prevent KeyError
+- ✅ Cache frequently-used variables to reduce DB queries
+- ❌ Don't use Variables for secrets (use Connections instead)
+- ❌ Don't read Variables in the DAG file top-level (causes DB query on every parse)
+- 💡 Prefix variables with environment: `prod_api_key`, `staging_api_key`
+
+**Environment Variables:**
+Variables can also be set via environment variables with prefix `AIRFLOW_VAR_`:
+```bash
+export AIRFLOW_VAR_API_KEY="my_secret_key"
+export AIRFLOW_VAR_BATCH_SIZE="50"
+```
+
+### 8. Pools
+
+**Pools** limit the concurrent execution of tasks to manage resource usage. They prevent overloading external systems or controlling parallel task execution.
+
+**Use Cases:**
+- Limiting database connections
+- Controlling API rate limits
+- Managing computational resources
+- Preventing system overload
+
+**Managing Pools:**
+- **Via Web UI**: Admin → Pools → Add
+- **Via CLI**: `airflow pools set my_pool 5 "My pool description"`
+
+**Example Usage:**
+```python
+# Define tasks with pool assignment
+@task(pool='database_pool')
+def query_database():
+    # This task will respect the database_pool slot limit
+    return run_query()
+
+@task(pool='api_pool', pool_slots=2)
+def call_api():
+    # This task uses 2 slots from api_pool
+    return make_api_call()
+
+# In traditional operators
+from airflow.operators.bash import BashOperator
+
+heavy_task = BashOperator(
+    task_id='heavy_processing',
+    bash_command='python process_large_file.py',
+    pool='processing_pool',
+    pool_slots=3  # Uses 3 slots
+)
+```
+
+**Default Pool:**
+- Airflow has a default pool with 128 slots
+- Tasks without explicit pool assignment use the default pool
+- You can modify the default pool size
+
+**Example Pool Configuration:**
+```python
+# Create pools via CLI
+airflow pools set postgres_pool 5 "PostgreSQL connection pool"
+airflow pools set api_pool 10 "External API calls pool"
+airflow pools set heavy_compute 2 "Heavy computation tasks"
+
+# List pools
+airflow pools list
+
+# Check pool usage
+airflow pools get postgres_pool
+```
+
+**Best Practices:**
+- ✅ Create pools for shared external resources
+- ✅ Set pool sizes based on resource capacity
+- ✅ Monitor pool usage in the UI (Admin → Pools)
+- ✅ Use descriptive pool names
+- ❌ Don't create too many small pools (management overhead)
+- 💡 Start with conservative pool sizes and increase as needed
+- 💡 Use `priority_weight` to prioritize important tasks when pool is full
+
+**Priority with Pools:**
+```python
+@task(pool='limited_pool', priority_weight=10)
+def high_priority_task():
+    # Runs before lower priority tasks when pool is full
+    pass
+
+@task(pool='limited_pool', priority_weight=1)
+def low_priority_task():
+    # Runs after higher priority tasks
+    pass
+```
+
+### 9. Sensors
+
+**Sensors** are special operators that wait for a certain condition to be met before proceeding. They periodically check (poke) for the condition and succeed when it's true.
+
+**Common Sensors:**
+- `FileSensor` - Wait for file to exist
+- `S3KeySensor` - Wait for S3 object
+- `DateTimeSensor` - Wait for specific datetime
+- `ExternalTaskSensor` - Wait for another DAG/task
+- `HttpSensor` - Wait for HTTP endpoint
+- `SqlSensor` - Wait for SQL query condition
+
+**Example Usage:**
+```python
+from airflow.sensors.filesystem import FileSensor
+from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor
+from airflow.sensors.external_task import ExternalTaskSensor
+
+# Wait for file to appear
+wait_for_file = FileSensor(
+    task_id='wait_for_input_file',
+    filepath='/data/input.csv',
+    poke_interval=30,  # Check every 30 seconds
+    timeout=600,  # Give up after 10 minutes
+    mode='poke',  # or 'reschedule'
+)
+
+# Wait for S3 object
+wait_for_s3 = S3KeySensor(
+    task_id='wait_for_s3_file',
+    bucket_name='my-bucket',
+    bucket_key='data/{{ ds }}/input.parquet',
+    aws_conn_id='aws_default',
+    poke_interval=60,
+    timeout=3600,
+)
+
+# Wait for another DAG to complete
+wait_for_upstream = ExternalTaskSensor(
+    task_id='wait_for_upstream_dag',
+    external_dag_id='upstream_pipeline',
+    external_task_id='final_task',
+    timeout=7200,
+)
+
+# Custom sensor
+from airflow.sensors.base import BaseSensorOperator
+
+class CustomApiSensor(BaseSensorOperator):
+    def poke(self, context):
+        # Return True when condition is met
+        response = check_api_status()
+        return response.status == 'ready'
+
+# Usage in DAG
+wait_for_file >> process_file >> save_results
+```
+
+**Sensor Modes:**
+- **poke** (default): Sensor takes a worker slot while waiting
+  - Simple, immediate response when condition met
+  - Uses worker slot continuously
+  - Good for short waits (< 5 minutes)
+
+- **reschedule**: Sensor releases worker slot between pokes
+  - Frees worker for other tasks
+  - Small delay when condition is met (next sensor check)
+  - Good for long waits (> 5 minutes)
+
+**Best Practices:**
+- ✅ Use `mode='reschedule'` for long-running sensors
+- ✅ Set appropriate `timeout` values
+- ✅ Use `poke_interval` to avoid excessive checking
+- ✅ Consider using `exponential_backoff=True` for some sensors
+- ❌ Don't use poke mode for sensors that wait hours/days
+- 💡 Use sensors instead of sleep() in tasks
+- 💡 Chain multiple sensors with timeouts for complex conditions
+
+### 10. Hooks
+
+**Hooks** are interfaces to external systems that encapsulate connection logic and provide reusable methods for interacting with databases, APIs, and services.
+
+**Purpose:**
+- Abstract connection details
+- Provide consistent interface
+- Reusable across multiple tasks/DAGs
+- Handle connection pooling and retries
+
+**Common Hooks:**
+```python
+# PostgreSQL Hook
+from airflow.providers.postgres.hooks.postgres import PostgresHook
+
+hook = PostgresHook(postgres_conn_id='my_postgres')
+records = hook.get_records('SELECT * FROM users')
+hook.run('INSERT INTO logs VALUES (%s, %s)', parameters=('event', 'now'))
+
+# S3 Hook
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+
+s3_hook = S3Hook(aws_conn_id='aws_default')
+s3_hook.load_file('/local/file.csv', 'my-bucket', 's3-key')
+files = s3_hook.list_keys('my-bucket', prefix='data/')
+
+# HTTP Hook
+from airflow.providers.http.hooks.http import HttpHook
+
+http_hook = HttpHook(http_conn_id='api_default', method='GET')
+response = http_hook.run('endpoint/path')
+data = response.json()
+
+# Slack Hook
+from airflow.providers.slack.hooks.slack import SlackHook
+
+slack_hook = SlackHook(slack_conn_id='slack_default')
+slack_hook.call('chat.postMessage', json={
+    'channel': '#alerts',
+    'text': 'Pipeline completed!'
+})
+```
+
+**Custom Hook Example:**
+```python
+from airflow.hooks.base import BaseHook
+
+class CustomApiHook(BaseHook):
+    """Hook for Custom API interactions."""
+    
+    def __init__(self, api_conn_id='custom_api_default'):
+        self.api_conn_id = api_conn_id
+        self.base_url = None
+        self.api_key = None
+    
+    def get_conn(self):
+        """Get connection details."""
+        conn = self.get_connection(self.api_conn_id)
+        self.base_url = f"{conn.host}:{conn.port}"
+        self.api_key = conn.password
+        return self
+    
+    def fetch_data(self, endpoint):
+        """Fetch data from API."""
+        import requests
+        self.get_conn()
+        url = f"{self.base_url}/{endpoint}"
+        headers = {'Authorization': f'Bearer {self.api_key}'}
+        response = requests.get(url, headers=headers)
+        return response.json()
+
+# Using custom hook
+@task
+def get_api_data():
+    hook = CustomApiHook(api_conn_id='my_custom_api')
+    data = hook.fetch_data('users')
+    return data
+```
+
+**Best Practices:**
+- ✅ Use hooks instead of directly managing connections
+- ✅ Create custom hooks for frequently-used APIs
+- ✅ Leverage provider packages for common systems
+- ✅ Use connection pooling features
+- ❌ Don't create new connections in every task
+- 💡 Hooks make testing easier (can mock connections)
+- 💡 Check if a provider package exists before writing custom code
+
+### 11. Executors
+
+**Executors** determine how and where tasks are run. They define the parallelism and infrastructure for task execution.
+
+**Types of Executors:**
+
+**1. SequentialExecutor** (Default, Development)
+- Executes one task at a time
+- Uses SQLite database
+- Good for: Testing, learning, debugging
+- Limitations: No parallelism
+
+**2. LocalExecutor** (Local Parallelism)
+- Runs multiple tasks in parallel on the same machine
+- Uses separate processes
+- Requires: PostgreSQL or MySQL (not SQLite)
+- Good for: Single-machine production, development
+```python
+# In airflow.cfg
+[core]
+executor = LocalExecutor
+parallelism = 32  # Max concurrent tasks
+```
+
+**3. CeleryExecutor** (Distributed)
+- Distributes tasks across multiple worker machines
+- Uses message queue (Redis, RabbitMQ)
+- Requires: Celery setup, message broker
+- Good for: Large-scale production, horizontal scaling
+```python
+# In airflow.cfg
+[core]
+executor = CeleryExecutor
+
+[celery]
+broker_url = redis://localhost:6379/0
+result_backend = db+postgresql://user:pass@localhost/airflow
+```
+
+**4. KubernetesExecutor** (Cloud-Native)
+- Spawns new Kubernetes pod for each task
+- Dynamic resource allocation
+- Excellent isolation between tasks
+- Good for: Cloud environments, varying resource needs
+```python
+# In airflow.cfg
+[core]
+executor = KubernetesExecutor
+
+[kubernetes]
+namespace = airflow
+```
+
+**5. CeleryKubernetesExecutor** (Hybrid)
+- Combines Celery and Kubernetes executors
+- Route tasks to different executors based on queue
+- Maximum flexibility
+
+**Choosing an Executor:**
+```
+Development/Learning:
+  └─> SequentialExecutor (simple, included)
+
+Single Machine Production:
+  └─> LocalExecutor (parallel, reliable)
+
+Multiple Machines:
+  └─> CeleryExecutor (distributed, scalable)
+
+Cloud/Kubernetes:
+  └─> KubernetesExecutor (dynamic, isolated)
+
+Hybrid Needs:
+  └─> CeleryKubernetesExecutor (flexible)
+```
+
+**Executor Configuration Example:**
+```python
+# airflow.cfg for LocalExecutor
+[core]
+executor = LocalExecutor
+parallelism = 32          # Max tasks across all DAGs
+dag_concurrency = 16      # Max tasks per DAG
+max_active_runs_per_dag = 3
+
+# Per-DAG configuration
+with DAG(
+    dag_id='my_dag',
+    max_active_runs=2,     # Override global setting
+    concurrency=8,         # Max parallel tasks in this DAG
+    ...
+) as dag:
+    pass
+```
+
+**Best Practices:**
+- ✅ Start with SequentialExecutor for learning
+- ✅ Use LocalExecutor for production single-node deployments
+- ✅ Use CeleryExecutor when you need multiple machines
+- ✅ Use KubernetesExecutor in cloud environments
+- ✅ Monitor executor performance and adjust parallelism
+- ❌ Don't use SequentialExecutor in production
+- 💡 Consider task resource requirements when choosing executor
+- 💡 KubernetesExecutor provides best isolation but has overhead
 
 ## Getting Started
 
@@ -314,8 +802,8 @@ The `src` folder in `airflow/dags/` contains shared code used by the DAGs. This 
 
 ```python
 from datetime import datetime, timedelta
-from airflow.sdk import DAG
-from airflow.sdk.decorators import task
+from airflow import DAG
+from airflow.decorators import task
 
 # 1. Define default arguments
 default_args = {
