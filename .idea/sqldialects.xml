@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/dbt_projects/dbt_demo" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/dbt_projects/dbt_demo/models/silvers/tickets_with_bookings.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/dbt_projects/dbt_demo/models/stagging/stg_fligths.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/sql/seed_dbt.sql" dialect="PostgreSQL" />
-  </component>
-</project>
