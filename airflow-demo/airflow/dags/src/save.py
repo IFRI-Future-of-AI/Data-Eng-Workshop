@@ -1,7 +1,7 @@
 import polars as pl
-from .logger import configure_logging
-from .constants import SCHEMA_MAPPING, DATABASE_NAME, DATSET_FOLDER
-from .database import connect_to_postgresql_database
+from src.logger import configure_logging
+from src.constants import SCHEMA_MAPPING, DATABASE_NAME, DATSET_FOLDER
+from src.database import connect_to_postgresql_database
 logger = configure_logging(log_file="save.log", logger_name="save")
 
 def generate_file_schema_for_postgresql_database(file_path: str) -> str:
