@@ -97,7 +97,7 @@ A **DAG** is a collection of tasks organized to reflect their relationships and 
 
 **Example:**
 ```python
-from airflow.sdk import DAG
+from airflow import DAG
 from datetime import datetime
 
 with DAG(
@@ -129,7 +129,7 @@ A **Task** is a unit of work within a DAG. It represents a single operation in y
 
 **Example:**
 ```python
-from airflow.sdk.decorators import task
+from airflow.decorators import task
 
 @task
 def my_function():
@@ -177,7 +177,7 @@ with TaskGroup('data_processing') as processing_group:
 
 ```python
 # BashOperator - Run bash commands
-from airflow.providers.standard.operators.bash import BashOperator
+from airflow.operators.bash import BashOperator
 
 bash_task = BashOperator(
     task_id='run_script',
@@ -185,7 +185,7 @@ bash_task = BashOperator(
 )
 
 # PythonOperator - Run Python functions
-from airflow.providers.standard.operators.python import PythonOperator
+from airflow.operators.python import PythonOperator
 
 def my_function():
     print("Hello from Python")
@@ -196,7 +196,7 @@ python_task = PythonOperator(
 )
 
 # EmailOperator - Send emails
-from airflow.providers.standard.operators.email import EmailOperator
+from airflow.operators.email import EmailOperator
 
 email_task = EmailOperator(
     task_id='send_email',
@@ -802,8 +802,8 @@ The `src` folder in `airflow/dags/` contains shared code used by the DAGs. This 
 
 ```python
 from datetime import datetime, timedelta
-from airflow.sdk import DAG
-from airflow.sdk.decorators import task
+from airflow import DAG
+from airflow.decorators import task
 
 # 1. Define default arguments
 default_args = {
