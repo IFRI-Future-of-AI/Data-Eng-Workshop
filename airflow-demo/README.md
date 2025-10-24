@@ -1,0 +1,1 @@
+# Run the projeeect `AIRFLOW_HOME="$(pwd)/airflow" uv run --project . airflow standalone`

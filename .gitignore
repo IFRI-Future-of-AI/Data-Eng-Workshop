@@ -6,3 +6,7 @@ venv
 __pycache__
 .ideaxs
 *.DS_Store
+.idea
+*.xml
+*log/
+*dag_processor/
