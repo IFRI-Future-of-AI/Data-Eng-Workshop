@@ -1,9 +1,14 @@
 from psycopg2 import connect
 from .logger import configure_logging
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env file from the airflow-demo directory
+# This handles cases where the script is run from different working directories
+# Path structure: database.py -> src -> dags -> airflow -> airflow-demo
+env_path = Path(__file__).resolve().parents[3] / '.env'
+load_dotenv(dotenv_path=env_path)
 
 POSTGRESQL_HOST = os.getenv("POSTGRESQL_HOST")
 POSTGRESQL_PORT = os.getenv("POSTGRESQL_PORT")
