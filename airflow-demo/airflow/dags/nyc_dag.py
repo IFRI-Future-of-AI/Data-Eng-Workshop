@@ -10,9 +10,11 @@ This DAG demonstrates a complete data pipeline using the python_project code:
 The pipeline uses the existing functions from the python_project.
 """
 from datetime import datetime, timedelta
-from airflow.sdk import DAG
-from airflow.sdk.decorators import task
+from airflow import DAG
+from airflow.decorators import task
 from airflow.utils.task_group import TaskGroup
+# Import functions from the local src module (copied from python_project)
+# This is the standard pattern in Airflow - DAGs need direct access to code
 from src import (
     download_data_for_month,
     generate_file_schema_for_postgresql_database,

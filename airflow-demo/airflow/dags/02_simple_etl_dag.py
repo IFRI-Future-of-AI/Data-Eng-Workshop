@@ -8,8 +8,8 @@ This DAG shows:
 - Error handling
 """
 from datetime import datetime, timedelta
-from airflow.sdk import DAG
-from airflow.sdk.decorators import task
+from airflow import DAG
+from airflow.decorators import task
 from airflow.utils.task_group import TaskGroup
 
 # Default arguments

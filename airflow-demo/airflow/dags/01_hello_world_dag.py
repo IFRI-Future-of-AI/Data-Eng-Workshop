@@ -8,9 +8,9 @@ This DAG shows:
 - Task dependencies
 """
 from datetime import datetime, timedelta
-from airflow.sdk import DAG
-from airflow.sdk.decorators import task
-from airflow.providers.standard.operators.bash import BashOperator
+from airflow import DAG
+from airflow.decorators import task
+from airflow.operators.bash import BashOperator
 
 # Default arguments for all tasks
 default_args = {

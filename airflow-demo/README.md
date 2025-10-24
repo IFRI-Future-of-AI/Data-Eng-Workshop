@@ -302,6 +302,12 @@ airflow-demo/
 └── README.md                      # This file
 ```
 
+**Note about `src` folder:**
+The `src` folder in `airflow/dags/` contains shared code used by the DAGs. This is a copy of code from the `python_project` directory, which is necessary because:
+- Airflow DAGs need direct access to modules they import
+- The DAG folder must be self-contained for proper parsing
+- This is a common pattern in Airflow projects
+
 ## Writing DAGs
 
 ### Basic DAG Structure
@@ -559,6 +565,9 @@ Production example with:
 ### Useful Commands
 
 ```bash
+# Validate DAG syntax (without Airflow running)
+python3 validate_dags.py
+
 # List all DAGs
 airflow dags list
 
