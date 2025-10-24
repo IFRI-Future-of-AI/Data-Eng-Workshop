@@ -1,7 +1,7 @@
-from .logger import configure_logging
+from src.logger import configure_logging
 import requests
 import polars as pl 
-from .constants import NYC_TRIPS_URL, DATSET_FOLDER, TAXI_ZONE_URL
+from src.constants import NYC_TRIPS_URL, DATSET_FOLDER, TAXI_ZONE_URL
 import os
 
 logger = configure_logging(log_file="download.log", logger_name="download")

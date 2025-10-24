@@ -95,8 +95,8 @@ with DAG(
         
         # Process group task flow
         schema_data = generate_schema(download_data(
-            year="{{ execution_date.year }}",
-            month="{{ execution_date.strftime('%m') }}",
+            year="{{ logical_date.year }}",
+            month="{{ logical_date.strftime('%m') }}",
             download_dir=f"./data/{DATSET_FOLDER}"
         ))
         table_data = create_table(schema_data)

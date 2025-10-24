@@ -1,5 +1,5 @@
 from psycopg2 import connect
-from .logger import configure_logging
+from src.logger import configure_logging
 import os
 from pathlib import Path
 from dotenv import load_dotenv
