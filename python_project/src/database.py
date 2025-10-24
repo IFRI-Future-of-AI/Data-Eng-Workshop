@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 
 # Load .env file from the python_project directory
 # This handles cases where the script is run from different working directories
-env_path = Path(__file__).resolve().parent.parent / '.env'
+# Path structure: database.py -> src -> python_project
+env_path = Path(__file__).resolve().parents[1] / '.env'
 load_dotenv(dotenv_path=env_path)
 
 POSTGRESQL_HOST = os.getenv("POSTGRESQL_HOST")
