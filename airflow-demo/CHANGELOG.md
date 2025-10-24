@@ -30,10 +30,20 @@
    - Tags: `['production', 'nyc', 'etl']`
 
 #### Documentation
-- **README.md** - Comprehensive Airflow guide (609 lines)
+- **README.md** - Comprehensive Airflow guide (1000+ lines)
   - Philosophy and overview of Airflow
   - Detailed architecture explanation
-  - Core concepts: DAG, Task, TaskGroup, Operators, Connections, XCom
+  - Core concepts with extensive examples:
+    - DAG (Directed Acyclic Graph)
+    - Task and TaskGroup
+    - Operators
+    - Connections (expanded with best practices and examples)
+    - XCom (expanded with explicit/automatic usage, custom backends)
+    - Variables (runtime configuration)
+    - Pools (resource management and concurrency control)
+    - Sensors (waiting for conditions, modes, common types)
+    - Hooks (interface to external systems, custom hooks)
+    - Executors (Sequential, Local, Celery, Kubernetes)
   - Step-by-step guide on writing DAGs
   - Best practices for DAG design, task design, performance, testing, and monitoring
   - Project structure explanation
@@ -49,12 +59,21 @@
   - Usage: `python3 validate_dags.py`
 
 ### Changed
+- **nyc_dag.py** renamed to **03_nyc_data_pipeline.py** for consistency
 - Fixed Airflow imports to use standard API instead of `airflow.sdk`
   - Changed from `airflow.sdk` to `airflow`
   - Changed from `airflow.sdk.decorators` to `airflow.decorators`
   - Changed from `airflow.providers.standard.operators` to `airflow.operators`
 - Improved task dependencies and error handling in NYC pipeline
 - Updated import structure to properly use python_project code
+- Enhanced README.md with additional core concepts:
+  - Expanded Connections section with multiple examples and best practices
+  - Expanded XCom section with explicit push/pull, automatic TaskFlow, and custom backends
+  - Added Variables section for runtime configuration
+  - Added Pools section for resource management and concurrency control
+  - Added Sensors section covering modes, common types, and best practices
+  - Added Hooks section with examples and custom hook creation
+  - Added Executors section comparing Sequential, Local, Celery, and Kubernetes executors
 
 ### Removed
 - **example_dag.py** - Replaced with better examples (01_hello_world_dag.py)
