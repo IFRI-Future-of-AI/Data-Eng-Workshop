@@ -7,7 +7,7 @@ data transformations and provides various SQL queries for computing KPIs and
 aggregations.
 
 Functions:
-    fetch_table_from_postresql: Extract data from PostgreSQL and save to CSV
+    fetch_table_from_postgresql: Extract data from PostgreSQL and save to CSV
     compute: Execute SQL queries on CSV data and save results as JSON
     serialize: Helper function for JSON serialization of datetime and Decimal types
     load_to_mongo: Load JSON data into MongoDB collections
@@ -157,7 +157,7 @@ aggs = [v for v in stats if "week" not in v ]
 
 
 
-def fetch_table_from_postresql(table_name, conn_id='postgres_default'):
+def fetch_table_from_postgresql(table_name, conn_id='postgres_default'):
     """
     Extract a table from PostgreSQL database and save it as a CSV file.
     

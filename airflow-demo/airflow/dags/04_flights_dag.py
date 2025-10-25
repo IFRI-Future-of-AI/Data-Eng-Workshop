@@ -82,7 +82,7 @@ with DAG (
         for table in tables:
             extract_task = PythonOperator(
                 task_id = f"fetch_table_from_postgres_{table}",
-                python_callable = fetch_table_from_postresql,
+                python_callable = fetch_table_from_postgresql,
                 op_kwargs = {
                     'table_name': table
                 }
