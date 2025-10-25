@@ -1,3 +1,29 @@
+"""
+Utility Functions for Flight Data ETL Pipeline
+
+This module contains helper functions for extracting, transforming, and loading
+flight data from PostgreSQL to MongoDB. It uses DuckDB for efficient in-memory
+data transformations and provides various SQL queries for computing KPIs and
+aggregations.
+
+Functions:
+    fetch_table_from_postresql: Extract data from PostgreSQL and save to CSV
+    compute: Execute SQL queries on CSV data and save results as JSON
+    serialize: Helper function for JSON serialization of datetime and Decimal types
+    load_to_mongo: Load JSON data into MongoDB collections
+    clean_up_files: Remove temporary CSV and JSON files from dump directory
+
+SQL Queries:
+    The module defines various SQL queries for computing metrics:
+    - total_flights_per_week: Count flights per week
+    - delayed_flights_per_week: Count delayed flights per week
+    - average_delay_time_per_week: Average delay in minutes per week
+    - flights_over_time: Daily flight counts
+    - top_airports_by_departures: Top 10 airports by departure count
+    - average_passengers_per_flight_per_week: Average passenger count per week
+    - last_weeks_revenue: Total revenue per week
+    - flights_lines: Flight routes with geographic coordinates
+"""
 import pandas as pd
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.mongo.hooks.mongo import MongoHook
@@ -132,6 +158,25 @@ aggs = [v for v in stats if "week" not in v ]
 
 
 def fetch_table_from_postresql(table_name, conn_id='postgres_default'):
+    """
+    Extract a table from PostgreSQL database and save it as a CSV file.
+    
+    This function connects to a PostgreSQL database using Airflow's PostgresHook,
+    executes a SELECT query with a limit, and saves the results to a CSV file
+    in the 'dump' directory.
+    
+    Args:
+        table_name (str): Name of the PostgreSQL table to extract
+        conn_id (str): Airflow connection ID for PostgreSQL. Defaults to 'postgres_default'
+    
+    Returns:
+        str: Path to the created CSV file (e.g., "dump/flights.csv")
+    
+    Note:
+        - Creates 'dump' directory if it doesn't exist
+        - Limits extraction to 100,000 rows for performance
+        - Commented code shows examples for date-filtered queries
+    """
     pg_hook = PostgresHook(postgres_conn_id=conn_id)
     conn = pg_hook.get_conn()
     # if table_name == "flights":
@@ -152,6 +197,27 @@ def fetch_table_from_postresql(table_name, conn_id='postgres_default'):
     return f"dump/{table_name}.csv"
 
 def compute(stats):
+    """
+    Compute statistics from CSV files using DuckDB and save results as JSON.
+    
+    This function reads CSV files from the 'dump' directory, executes predefined
+    SQL queries on them using DuckDB, and saves the results as JSON files.
+    DuckDB is used for efficient in-memory SQL processing without needing a
+    full database server.
+    
+    Args:
+        stats (str): Name of the statistic to compute. Must match a key in the
+                    'queries' dictionary (e.g., 'total_flights_per_week',
+                    'top_airports_by_departures')
+    
+    Returns:
+        str: Path to the created JSON file (e.g., "dump/total_flights_per_week.json")
+    
+    Note:
+        - Reads all required tables into DuckDB in-memory
+        - Uses the serialize function for datetime and Decimal conversion
+        - Results are stored as an array of dictionaries
+    """
     ticket_flights = db.read_csv("dump/ticket_flights.csv")
     boarding_passes = db.read_csv("dump/boarding_passes.csv")
     bookings = db.read_csv("dump/bookings.csv")
@@ -169,6 +235,22 @@ def compute(stats):
     return file_path
     
 def serialize(obj):
+    """
+    Serialize Python objects to JSON-compatible types.
+    
+    Custom JSON serializer for handling objects that are not natively
+    JSON-serializable, specifically Decimal and datetime objects.
+    
+    Args:
+        obj: Object to serialize
+    
+    Returns:
+        str: ISO-formatted string for datetime/date objects, or string
+             representation for Decimal objects
+    
+    Raises:
+        TypeError: If the object type is not supported for serialization
+    """
     if isinstance(obj, Decimal ):
         return str(obj)
     if isinstance(obj, (datetime, date)):
@@ -176,6 +258,23 @@ def serialize(obj):
     raise TypeError(f"Object of type {type(obj)} is not serializable")
 
 def load_to_mongo(stat, file_path):
+    """
+    Load JSON data into a MongoDB collection.
+    
+    This function reads JSON data from a file and loads it into MongoDB,
+    replacing any existing data in the collection. This ensures each run
+    provides fresh data without duplicates.
+    
+    Args:
+        stat (str): Name of the statistic, used as the MongoDB collection name
+        file_path (str): Path to the JSON file containing the data to load
+    
+    Note:
+        - Uses Airflow's MongoHook with connection ID 'mongo_flights'
+        - Deletes all existing documents in the collection before inserting
+        - Inserts data only if the JSON file contains records
+        - Closes the MongoDB connection after operation
+    """
     with open(file_path, 'r') as f:
         data = json.load(f)
     mongo_hook = MongoHook(conn_id="mongo_flights")
@@ -188,6 +287,17 @@ def load_to_mongo(stat, file_path):
     client.close()
     
 def clean_up_files():
+    """
+    Remove all temporary files from the dump directory.
+    
+    This cleanup function deletes all CSV and JSON files created during the
+    ETL process to free up disk space and ensure the next run starts fresh.
+    
+    Note:
+        - Removes only files, not subdirectories
+        - Iterates through all files in the 'dump' directory
+        - Should be called as the final step after data is loaded to MongoDB
+    """
     for file in os.listdir("dump"):
         file_path = os.path.join("dump", file)
         if os.path.isfile(file_path):
