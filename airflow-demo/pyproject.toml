@@ -17,4 +17,7 @@ dependencies = [
     "apache-airflow-providers-mongo>=5.2.2",
     "duckdb>=1.4.1",
     "pymongo>=4.15.3",
+    "apache-airflow-providers-postgres>=6.3.0",
+    "pyarrow>=22.0.0",
+    "dnspython>=2.8.0",
 ]

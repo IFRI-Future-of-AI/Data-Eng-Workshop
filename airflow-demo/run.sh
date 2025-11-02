@@ -1,0 +1,1 @@
+AIRFLOW_HOME="$(pwd)/airflow" AIRFLOW__CORE__LOAD_EXAMPLES="false"  uv run --project . airflow standalone

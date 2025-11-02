@@ -27,7 +27,7 @@ with DAG(
     default_args=default_args,
     description='A simple ETL pipeline demonstrating data processing',
     schedule='@daily',
-    start_date=datetime(2024, 1, 1),
+    start_date=datetime(2025, 10, 20),
     catchup=False,
     tags=['tutorial', 'etl'],
 ) as dag:

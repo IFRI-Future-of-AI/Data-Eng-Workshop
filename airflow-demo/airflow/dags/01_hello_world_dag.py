@@ -27,9 +27,9 @@ with DAG(
     dag_id='01_hello_world',
     default_args=default_args,
     description='A simple Hello World DAG to demonstrate Airflow basics',
-    schedule=None,  # Manual trigger only
-    start_date=datetime(2024, 1, 1),
-    catchup=False,
+    schedule="@daily",  # Daily trigger
+    start_date=datetime(2025, 10, 20),
+    catchup=True,
     tags=['tutorial', 'simple'],
 ) as dag:
     

@@ -40,8 +40,8 @@ with DAG(
     default_args=default_args,
     description='NYC Taxi data ETL pipeline - downloads, processes and loads data',
     schedule='@monthly',
-    start_date=datetime(2024, 1, 1),
-    catchup=False,
+    start_date=datetime(2025, 1, 1),
+    catchup=True,
     tags=['production', 'nyc', 'etl'],
 ) as dag:
     

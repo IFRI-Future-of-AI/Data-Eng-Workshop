@@ -184,7 +184,7 @@ def fetch_table_from_postgresql(table_name, conn_id='postgres_default'):
     # elif table_name == "bookings" :
     #     query = f"SELECT * FROM {table_name} WHERE book_date <= '2017-05-15' LIMIT 100000"
     # else : 
-    query = f"SELECT * FROM {table_name} LIMIT 100000"  
+    query = f"SELECT * FROM demo.bookings.{table_name} LIMIT 100000"  
      
     df = pd.read_sql(query, conn)
     conn.close()

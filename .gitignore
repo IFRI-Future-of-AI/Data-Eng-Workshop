@@ -3,6 +3,8 @@
 venv
 .venv
 *.parquet
+*.csv
+*.json
 __pycache__
 .ideaxs
 *.DS_Store
@@ -10,3 +12,7 @@ __pycache__
 *.xml
 *log/
 *dag_processor/
+airflow-demo/airflow/airflow.cfg
+airflow-demo/airflow/airflow.db
+airflow-demo/airflow/simple_auth_manager_passwords.json.generated
+airflow-demo/airflow/airflow.cfg
