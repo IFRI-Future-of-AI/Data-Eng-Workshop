@@ -42,7 +42,7 @@ jobs:
           file: ./docker/api/Dockerfile
           platforms: linux/amd64, linux/arm64
           push: true
-          tags: ghcr.io/IFRI-Future-of-AI/Data-Eng-Workshop/api:${{ github.sha }}, ghcr.io/IFRI-Future-of-AI/Data-Eng-Workshop/api:latest
+          tags: ghcr.io/ifri-future-of-ai/data-eng-workshop/api:${{ github.sha }}, ghcr.io/ifri-future-of-ai/data-eng-workshop/api:latest
       
       - name: 🐋 Build and push docker Exemple Image
         uses: docker/build-push-action@v6
@@ -51,4 +51,4 @@ jobs:
           file: ./docker/exemple/Dockerfile
           platforms: linux/amd64, linux/arm64
           push: true
-          tags: ghcr.io/IFRI-Future-of-AI/Data-Eng-Workshop/exemple:${{ github.sha }}, ghcr.io/IFRI-Future-of-AI/Data-Eng-Workshop/exemple:latest   
+          tags: ghcr.io/ifri-future-of-ai/data-eng-workshop/exemple:${{ github.sha }}, ghcr.io/ifri-future-of-ai/data-eng-workshop/exemple:latest   
