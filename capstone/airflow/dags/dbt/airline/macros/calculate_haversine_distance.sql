@@ -2,7 +2,7 @@
     {#
         Macro: calculate_haversine_distance
         Description: Calcule la distance en kilomètres entre deux points GPS
-                     en utilisant la formule de Haversine
+                     en utilisant la formule de Haversine pour ClickHouse
         
         Paramètres:
             - lat1: Latitude du point 1 (degrés)
@@ -16,14 +16,10 @@
             {{ calculate_haversine_distance('dep_lat', 'dep_lon', 'arr_lat', 'arr_lon') }} AS distance_km
     #}
     
-    111.045 * DEGREES(
-        ACOS(
-            COS(RADIANS({{ lat1 }}))
-            * COS(RADIANS({{ lat2 }}))
-            * COS(RADIANS({{ lon1 }}) - RADIANS({{ lon2 }}))
-            + SIN(RADIANS({{ lat1 }}))
-            * SIN(RADIANS({{ lat2 }}))
-        )
-    )
+    2 * 6371 * asin(sqrt(
+        pow(sin(({{ lat2 }} - {{ lat1 }}) * pi() / 360), 2) +
+        cos({{ lat1 }} * pi() / 180) * cos({{ lat2 }} * pi() / 180) *
+        pow(sin(({{ lon2 }} - {{ lon1 }}) * pi() / 360), 2)
+    ))
     
 {% endmacro %}

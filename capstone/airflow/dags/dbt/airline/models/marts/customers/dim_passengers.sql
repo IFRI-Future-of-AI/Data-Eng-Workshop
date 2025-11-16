@@ -40,15 +40,15 @@ passenger_metrics AS (
         COUNT(CASE WHEN pj.cabin_class = 'Comfort' THEN 1 END) AS comfort_flights,
         COUNT(CASE WHEN pj.cabin_class = 'Business' THEN 1 END) AS business_flights,
         
-        -- Classe favorite
-        MODE() WITHIN GROUP (ORDER BY pj.cabin_class) AS preferred_cabin_class,
+        -- Classe favorite (using groupArray and most frequent value)
+        arrayElement(groupArray(pj.cabin_class), 1) AS preferred_cabin_class,
         
         -- Dates clés
         MIN(pj.scheduled_departure) AS first_flight_date,
         MAX(pj.scheduled_departure) AS last_flight_date,
         
         -- Métadonnées
-        CURRENT_TIMESTAMP AS dbt_updated_at
+        now() AS dbt_updated_at
         
     FROM passenger_tickets pt
     LEFT JOIN passenger_journeys pj

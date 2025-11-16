@@ -38,19 +38,19 @@ enriched_flights AS (
         f.actual_arrival,
         
         -- Calcul de la durée de vol
-        EXTRACT(EPOCH FROM (f.actual_arrival - f.actual_departure))/3600 AS actual_flight_duration_hours,
-        EXTRACT(EPOCH FROM (f.scheduled_arrival - f.scheduled_departure))/3600 AS scheduled_flight_duration_hours,
+        dateDiff('second', f.actual_departure, f.actual_arrival)/3600.0 AS actual_flight_duration_hours,
+        dateDiff('second', f.scheduled_departure, f.scheduled_arrival)/3600.0 AS scheduled_flight_duration_hours,
         
         -- Calcul des retards
-        EXTRACT(EPOCH FROM (f.actual_departure - f.scheduled_departure))/60 AS departure_delay_minutes,
-        EXTRACT(EPOCH FROM (f.actual_arrival - f.scheduled_arrival))/60 AS arrival_delay_minutes,
+        dateDiff('second', f.scheduled_departure, f.actual_departure)/60.0 AS departure_delay_minutes,
+        dateDiff('second', f.scheduled_arrival, f.actual_arrival)/60.0 AS arrival_delay_minutes,
         
         -- Classification du retard
         CASE
-            WHEN EXTRACT(EPOCH FROM (f.actual_arrival - f.scheduled_arrival))/60 <= 0 THEN 'À l''heure'
-            WHEN EXTRACT(EPOCH FROM (f.actual_arrival - f.scheduled_arrival))/60 BETWEEN 1 AND 15 THEN 'Retard mineur'
-            WHEN EXTRACT(EPOCH FROM (f.actual_arrival - f.scheduled_arrival))/60 BETWEEN 16 AND 60 THEN 'Retard modéré'
-            WHEN EXTRACT(EPOCH FROM (f.actual_arrival - f.scheduled_arrival))/60 > 60 THEN 'Retard majeur'
+            WHEN dateDiff('second', f.scheduled_arrival, f.actual_arrival)/60.0 <= 0 THEN 'À l''heure'
+            WHEN dateDiff('second', f.scheduled_arrival, f.actual_arrival)/60.0 BETWEEN 1 AND 15 THEN 'Retard mineur'
+            WHEN dateDiff('second', f.scheduled_arrival, f.actual_arrival)/60.0 BETWEEN 16 AND 60 THEN 'Retard modéré'
+            WHEN dateDiff('second', f.scheduled_arrival, f.actual_arrival)/60.0 > 60 THEN 'Retard majeur'
         END AS delay_category,
         
         -- Informations aéroport de départ
@@ -75,18 +75,16 @@ enriched_flights AS (
         ac.flight_range_km,
         ac.aircraft_category,
         
-        -- Calcul distance approximative (formule haversine simplifiée)
+        -- Calcul distance approximative (formule haversine)
         -- Distance en km entre deux points GPS
-        111.045 * DEGREES(ACOS(
-            COS(RADIANS(dep_apt.latitude))
-            * COS(RADIANS(arr_apt.latitude))
-            * COS(RADIANS(dep_apt.longitude) - RADIANS(arr_apt.longitude))
-            + SIN(RADIANS(dep_apt.latitude))
-            * SIN(RADIANS(arr_apt.latitude))
+        2 * 6371 * asin(sqrt(
+            pow(sin((arr_apt.latitude - dep_apt.latitude) * pi() / 360), 2) +
+            cos(dep_apt.latitude * pi() / 180) * cos(arr_apt.latitude * pi() / 180) *
+            pow(sin((arr_apt.longitude - dep_apt.longitude) * pi() / 360), 2)
         )) AS route_distance_km,
         
         -- Métadonnées
-        CURRENT_TIMESTAMP AS dbt_updated_at
+        now() AS dbt_updated_at
         
     FROM flights f
     INNER JOIN departure_airports dep_apt

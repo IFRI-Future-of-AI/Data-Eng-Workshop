@@ -1,7 +1,7 @@
 {% macro calculate_flight_duration(departure_timestamp, arrival_timestamp, unit='hours') %}
     {#
         Macro: calculate_flight_duration
-        Description: Calcule la durée entre deux timestamps
+        Description: Calcule la durée entre deux timestamps pour ClickHouse
         
         Paramètres:
             - departure_timestamp: Timestamp de départ
@@ -15,13 +15,13 @@
     #}
     
     {% if unit == 'hours' %}
-        EXTRACT(EPOCH FROM ({{ arrival_timestamp }} - {{ departure_timestamp }})) / 3600
+        dateDiff('second', {{ departure_timestamp }}, {{ arrival_timestamp }}) / 3600.0
     {% elif unit == 'minutes' %}
-        EXTRACT(EPOCH FROM ({{ arrival_timestamp }} - {{ departure_timestamp }})) / 60
+        dateDiff('second', {{ departure_timestamp }}, {{ arrival_timestamp }}) / 60.0
     {% elif unit == 'seconds' %}
-        EXTRACT(EPOCH FROM ({{ arrival_timestamp }} - {{ departure_timestamp }}))
+        dateDiff('second', {{ departure_timestamp }}, {{ arrival_timestamp }})
     {% else %}
-        EXTRACT(EPOCH FROM ({{ arrival_timestamp }} - {{ departure_timestamp }})) / 3600
+        dateDiff('second', {{ departure_timestamp }}, {{ arrival_timestamp }}) / 3600.0
     {% endif %}
     
 {% endmacro %}

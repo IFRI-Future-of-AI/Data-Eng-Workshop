@@ -83,12 +83,12 @@ passenger_journey_segments AS (
         -- Identification premier et dernier segment
         CASE 
             WHEN ROW_NUMBER() OVER (PARTITION BY t.id ORDER BY f.scheduled_departure) = 1 
-            THEN TRUE ELSE FALSE 
+            THEN 1 ELSE 0
         END AS is_first_segment,
         
         CASE 
             WHEN ROW_NUMBER() OVER (PARTITION BY t.id ORDER BY f.scheduled_departure DESC) = 1 
-            THEN TRUE ELSE FALSE 
+            THEN 1 ELSE 0
         END AS is_last_segment
         
     FROM tickets t
@@ -114,21 +114,21 @@ journey_summary AS (
         SUM(route_distance_km) OVER (PARTITION BY ticket_no) AS total_journey_distance_km,
         
         -- Premier aéroport (origine du voyage)
-        FIRST_VALUE(departure_airport_code) OVER (
+        any(departure_airport_code) OVER (
             PARTITION BY ticket_no 
             ORDER BY scheduled_departure 
             ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
         ) AS journey_origin_airport,
         
         -- Dernier aéroport (destination finale)
-        LAST_VALUE(arrival_airport_code) OVER (
+        anyLast(arrival_airport_code) OVER (
             PARTITION BY ticket_no 
             ORDER BY scheduled_departure 
             ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
         ) AS journey_destination_airport,
         
         -- Métadonnées
-        CURRENT_TIMESTAMP AS dbt_updated_at
+        now() AS dbt_updated_at
         
     FROM passenger_journey_segments
 )

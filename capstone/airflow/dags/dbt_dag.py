@@ -1,27 +1,24 @@
 from cosmos import DbtDag, ProjectConfig, ProfileConfig, ExecutionConfig
-from cosmos.profiles import SnowflakeUserPasswordProfileMapping
+from cosmos.profiles import ClickHouseUserPasswordProfileMapping
 import os 
 from datetime import datetime, timedelta
 
 profile_config = ProfileConfig(
-    profile_name="ride_share",
+    profile_name="airline",
     target_name="dev",
-    profile_mapping= SnowflakeUserPasswordProfileMapping(
-    conn_id = 'rentcar_snowflake_conn',
-    profile_args ={
-        "database": "RIDE_SHARE",
-        "warehouse": "COMPUTE_WH",
-        "schema": "RIDE_SHARE_V1",
-        "threads": 2,
-        "type": "snowflake",
-        "role": "ACCOUNTADMIN"
-    }
-)
+    profile_mapping=ClickHouseUserPasswordProfileMapping(
+        conn_id='airline_clickhouse_conn',
+        profile_args={
+            "schema": "bookings",
+            "threads": 2,
+            "type": "clickhouse",
+        }
+    )
 )
 
 my_cosmos_dag = DbtDag(
     project_config=ProjectConfig(
-        "/usr/local/airflow/dags/dbt/rentcar",
+        "/usr/local/airflow/dags/dbt/airline",
     ),
     profile_config=profile_config,
     execution_config=ExecutionConfig(
@@ -31,6 +28,6 @@ my_cosmos_dag = DbtDag(
     #schedule="0 1 * * *",
     start_date=datetime(2023, 1, 1),
     catchup=False,
-    dag_id="dbt_rentcar",
+    dag_id="dbt_airline",
     default_args={"retries": 2},
 )
