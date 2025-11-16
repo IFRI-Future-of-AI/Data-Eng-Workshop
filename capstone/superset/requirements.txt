@@ -1,0 +1,12 @@
+psycopg2
+mysqlclient 
+psycopg2-binary
+Pillow
+openpyxl
+Authlib
+pymssql
+# clickhouse-connect>=0.6.8
+# sqlalchemy-bigquery
+# snowflake-sqlalchemy
+# sqlalchemy-redshift
+cryptography

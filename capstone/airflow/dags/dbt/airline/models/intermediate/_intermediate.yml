@@ -1,0 +1,133 @@
+version: 2
+
+models:
+  - name: int_flights_enriched
+    description: |
+      Modèle intermédiaire consolidant les données de vols avec les informations 
+      contextuelles des aéroports et appareils. Calcule les durées, retards et 
+      distances de vol.
+    columns:
+      - name: flight_id
+        description: "Identifiant unique du vol"
+        tests:
+          - unique
+          - not_null
+      - name: flight_no
+        description: "Numéro de vol commercial"
+      - name: flight_status
+        description: "Statut actuel du vol"
+      - name: actual_flight_duration_hours
+        description: "Durée réelle du vol en heures"
+      - name: scheduled_flight_duration_hours
+        description: "Durée prévue du vol en heures"
+      - name: departure_delay_minutes
+        description: "Retard au départ en minutes (négatif si en avance)"
+      - name: arrival_delay_minutes
+        description: "Retard à l'arrivée en minutes (négatif si en avance)"
+      - name: delay_category
+        description: "Catégorie de retard (À l'heure, Mineur, Modéré, Majeur)"
+      - name: departure_airport_name
+        description: "Nom complet de l'aéroport de départ"
+      - name: departure_city
+        description: "Ville de départ"
+      - name: arrival_airport_name
+        description: "Nom complet de l'aéroport d'arrivée"
+      - name: arrival_city
+        description: "Ville d'arrivée"
+      - name: aircraft_model
+        description: "Modèle de l'appareil utilisé"
+      - name: aircraft_category
+        description: "Catégorie de l'appareil (Court/Moyen/Long-courrier)"
+      - name: route_distance_km
+        description: "Distance approximative de la route en km (calcul haversine)"
+
+  - name: int_bookings_with_revenue
+    description: |
+      Modèle intermédiaire agrégeant les données de réservations avec les métriques 
+      de revenus, nombre de passagers et segments de vol. Fournit une vue complète 
+      de chaque réservation pour l'analyse financière.
+    columns:
+      - name: booking_ref
+        description: "Référence unique de la réservation"
+        tests:
+          - unique
+          - not_null
+      - name: booking_date
+        description: "Date et heure de création de la réservation"
+      - name: booking_year
+        description: "Année de la réservation"
+      - name: booking_month
+        description: "Mois de la réservation (1-12)"
+      - name: booking_year_month
+        description: "Année-mois au format YYYY-MM"
+      - name: total_booking_amount
+        description: "Montant total de la réservation"
+        tests:
+          - not_null
+      - name: total_passengers
+        description: "Nombre total de passagers dans la réservation"
+      - name: revenue_per_passenger
+        description: "Revenu moyen par passager"
+      - name: passenger_names
+        description: "Liste des noms de passagers (concaténés)"
+      - name: total_flight_segments
+        description: "Nombre total de segments de vol dans la réservation"
+      - name: total_segments_revenue
+        description: "Somme des prix de tous les segments"
+      - name: avg_segment_price
+        description: "Prix moyen d'un segment de vol"
+      - name: economy_segments
+        description: "Nombre de segments en classe Economy"
+      - name: comfort_segments
+        description: "Nombre de segments en classe Comfort"
+      - name: business_segments
+        description: "Nombre de segments en classe Business"
+      - name: trip_type
+        description: "Type de voyage (Direct, Aller-Retour, Multi-destinations)"
+      - name: customer_value_segment
+        description: "Segment de valeur client (Économique, Standard, Premium, VIP)"
+
+  - name: int_passenger_journeys
+    description: |
+      Modèle intermédiaire reconstituant les parcours complets de chaque passager 
+      avec tous leurs segments de vol. Inclut la séquence des segments, informations 
+      d'embarquement et métriques cumulées du voyage.
+    columns:
+      - name: ticket_no
+        description: "Numéro unique du billet"
+        tests:
+          - not_null
+      - name: booking_ref
+        description: "Référence de la réservation"
+      - name: passenger_id
+        description: "Identifiant unique du passager"
+      - name: passenger_name
+        description: "Nom complet du passager"
+      - name: flight_id
+        description: "Identifiant du vol pour ce segment"
+      - name: segment_number
+        description: "Numéro du segment dans le voyage (ordre chronologique)"
+      - name: total_segments_in_journey
+        description: "Nombre total de segments dans le voyage complet"
+      - name: is_first_segment
+        description: "Indicateur si c'est le premier segment du voyage"
+      - name: is_last_segment
+        description: "Indicateur si c'est le dernier segment du voyage"
+      - name: cabin_class
+        description: "Classe de cabine pour ce segment"
+      - name: segment_price
+        description: "Prix de ce segment de vol"
+      - name: boarding_no
+        description: "Numéro d'embarquement du passager"
+      - name: seat_no
+        description: "Siège assigné pour ce vol"
+      - name: total_travel_time_hours
+        description: "Durée totale de vol (tous segments) en heures"
+      - name: total_journey_price
+        description: "Prix total du voyage (tous segments)"
+      - name: total_journey_distance_km
+        description: "Distance totale parcourue en km"
+      - name: journey_origin_airport
+        description: "Code de l'aéroport d'origine du voyage"
+      - name: journey_destination_airport
+        description: "Code de l'aéroport de destination finale"

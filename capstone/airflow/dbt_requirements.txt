@@ -1,0 +1,5 @@
+astronomer-cosmos 
+dbt-core 
+dbt-postgres 
+dbt-clickhouse
+apache-airflow-providers-airbyte
