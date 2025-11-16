@@ -36,7 +36,7 @@ with DAG(
     trigger_airbyte = AirbyteTriggerSyncOperator(
         task_id='trigger_airbyte_sync',
         airbyte_conn_id='airbyte_conn',
-        connection_id='cefbd9ed-0b69-4e93-b213-aa176f27a1e2',
+        connection_id='fcbf756f-f20d-4fdf-a380-24c02d334c54',
         asynchronous=True,
     )
     airbyte_sensor = AirbyteJobSensor(
