@@ -1,12 +1,12 @@
 from cosmos import DbtDag, ProjectConfig, ProfileConfig, ExecutionConfig
-from cosmos.profiles import ClickHouseUserPasswordProfileMapping
+from cosmos.profiles import ClickhouseUserPasswordProfileMapping
 import os 
 from datetime import datetime, timedelta
 
 profile_config = ProfileConfig(
     profile_name="airline",
     target_name="dev",
-    profile_mapping=ClickHouseUserPasswordProfileMapping(
+    profile_mapping=ClickhouseUserPasswordProfileMapping(
         conn_id='airline_clickhouse_conn',
         profile_args={
             "schema": "bookings",
