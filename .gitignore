@@ -3,6 +3,7 @@
 venv
 .venv
 *.parquet
+.idea/
 *.csv
 *.json
 __pycache__
