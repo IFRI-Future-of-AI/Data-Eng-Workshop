@@ -31,7 +31,7 @@ cleaned_ticket_flights AS (
             WHEN amount > 50000 THEN 'Luxe'
         END AS price_category,
         -- Métadonnées de traçabilité
-        CURRENT_TIMESTAMP AS dbt_loaded_at
+        now() AS dbt_loaded_at
     FROM source_ticket_flights
 )
 

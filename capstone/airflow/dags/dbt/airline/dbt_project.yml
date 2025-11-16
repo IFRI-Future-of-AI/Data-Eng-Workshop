@@ -32,6 +32,10 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   airline:
-    # Config indicated by + and applies to all files under models/example/
-    example:
+    # Config indicated by + and applies to all files under models/
+    stagging:
       +materialized: view
+    intermediate:
+      +materialized: table
+    marts:
+      +materialized: table

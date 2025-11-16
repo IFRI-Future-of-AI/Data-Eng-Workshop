@@ -26,7 +26,7 @@ tickets_aggregated AS (
         t.id_book,
         COUNT(DISTINCT t.id) AS total_passengers,
         COUNT(DISTINCT t.passenger_id) AS unique_passengers,
-        STRING_AGG(DISTINCT t.passenger_name, ', ') AS passenger_names
+        groupArray(DISTINCT t.passenger_name) AS passenger_names
     FROM tickets t
     GROUP BY t.id_book
 ),
@@ -57,20 +57,20 @@ enriched_bookings AS (
         b.date AS booking_date,
         
         -- Métriques temporelles
-        EXTRACT(YEAR FROM b.date) AS booking_year,
-        EXTRACT(MONTH FROM b.date) AS booking_month,
-        EXTRACT(DAY FROM b.date) AS booking_day,
-        TO_CHAR(b.date, 'Day') AS booking_day_of_week,
-        TO_CHAR(b.date, 'YYYY-MM') AS booking_year_month,
+        toYear(b.date) AS booking_year,
+        toMonth(b.date) AS booking_month,
+        toDayOfMonth(b.date) AS booking_day,
+        dateName('weekday', b.date) AS booking_day_of_week,
+        formatDateTime(b.date, '%Y-%m') AS booking_year_month,
         
         -- Métriques de revenus
         b.amount AS total_booking_amount,
         ta.total_passengers,
         ta.unique_passengers,
-        b.amount / NULLIF(ta.total_passengers, 0) AS revenue_per_passenger,
+        b.amount / nullIf(ta.total_passengers, 0) AS revenue_per_passenger,
         
         -- Informations passagers
-        ta.passenger_names,
+        arrayStringConcat(ta.passenger_names, ', ') AS passenger_names,
         
         -- Métriques de segments
         sa.total_flight_segments,
@@ -100,7 +100,7 @@ enriched_bookings AS (
         END AS customer_value_segment,
         
         -- Métadonnées
-        CURRENT_TIMESTAMP AS dbt_updated_at
+        now() AS dbt_updated_at
         
     FROM bookings b
     LEFT JOIN tickets_aggregated ta

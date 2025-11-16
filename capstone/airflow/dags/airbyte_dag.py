@@ -20,12 +20,12 @@ default_args = {
 
 with DAG(
     dag_id='airbyte_dag',
-    description='This dag orchestrate data loading from Airbyte to Snowflake',
+    description='This dag orchestrate data loading from Postgres via Airbyte to ClickHouse',
     default_args=default_args,
     start_date=datetime(2025, 7, 2),
     catchup=False,
     schedule="@daily",
-    tags=['airbyte', "rentcar"],
+    tags=['airbyte', 'airline', 'clickhouse'],
 ) as dag:
 
     # test_airbyte_conn = PythonOperator(
@@ -49,13 +49,9 @@ with DAG(
     
     trigger_dbt = TriggerDagRunOperator(
         task_id='trigger_dbt_dag',
-        trigger_dag_id='dbt_rentcar',
+        trigger_dag_id='dbt_airline',
         wait_for_completion=False,         
         reset_dag_run=True,    
     )
 
     trigger_airbyte >> airbyte_sensor >> trigger_dbt
-
-
-
-    trigger_airbyte >> airbyte_sensor

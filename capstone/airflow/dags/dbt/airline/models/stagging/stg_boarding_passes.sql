@@ -24,11 +24,11 @@ cleaned_boarding_passes AS (
         boarding_no,
         seat_no,
         -- Extraction de la rangée du siège
-        CAST(REGEXP_REPLACE(seat_no, '[A-Z]', '', 'g') AS INTEGER) AS seat_row,
+        toInt32(replaceRegexpAll(seat_no, '[A-Z]', '')) AS seat_row,
         -- Extraction de la lettre du siège
-        REGEXP_REPLACE(seat_no, '[0-9]', '', 'g') AS seat_letter,
+        replaceRegexpAll(seat_no, '[0-9]', '') AS seat_letter,
         -- Métadonnées de traçabilité
-        CURRENT_TIMESTAMP AS dbt_loaded_at
+        now() AS dbt_loaded_at
     FROM source_boarding_passes
 )
 

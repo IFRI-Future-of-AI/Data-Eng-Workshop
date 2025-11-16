@@ -19,8 +19,8 @@ WITH source_aircrafts AS (
 cleaned_aircrafts AS (
     SELECT
         aircraft_code,
-        -- Extraction du modèle en anglais depuis JSONB
-        model::jsonb->>'en' AS aircraft_model,
+        -- Extraction du modèle en anglais depuis JSON
+        JSONExtractString(model, 'en') AS aircraft_model,
         range AS flight_range_km,
         -- Catégorisation par autonomie
         CASE
@@ -29,7 +29,7 @@ cleaned_aircrafts AS (
             WHEN range > 6000 THEN 'Long-courrier'
         END AS aircraft_category,
         -- Métadonnées de traçabilité
-        CURRENT_TIMESTAMP AS dbt_loaded_at
+        now() AS dbt_loaded_at
     FROM source_aircrafts
 )
 
