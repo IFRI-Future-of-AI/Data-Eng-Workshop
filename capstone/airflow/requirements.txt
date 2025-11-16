@@ -4,6 +4,8 @@ dbt-core
 dbt-clickhouse
 apache-airflow-providers-airbyte
 apache-airflow-providers-postgres
+clickhouse-connect 
+clickhouse-driver
 airflow-clickhouse-plugin
 # faker
 # pymongo
