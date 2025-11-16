@@ -3,6 +3,8 @@ astronomer-cosmos[dbt.all]
 dbt-core 
 dbt-clickhouse
 apache-airflow-providers-airbyte
+apache-airflow-providers-postgres
+apache-airflow-providers-clickhouse
 # faker
 # pymongo
 # pydantic
