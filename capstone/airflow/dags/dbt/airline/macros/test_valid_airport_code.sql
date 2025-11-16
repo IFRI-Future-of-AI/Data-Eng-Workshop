@@ -20,8 +20,8 @@
     WHERE 
         {{ column_name }} IS NOT NULL
         AND (
-            LENGTH({{ column_name }}) != 3
-            OR {{ column_name }} !~ '^[A-Z]{3}$'
+            length({{ column_name }}) != 3
+            OR NOT match({{ column_name }}, '^[A-Z]{3}$')
         )
     GROUP BY {{ column_name }}
     HAVING COUNT(*) > 0
